@@ -1,6 +1,7 @@
 """
 Sistema Universal de Busca de Aplicativos
 Encontra TODOS os apps instalados no PC (como menu iniciar)
+VERSÃO ULTRA: Filtros inteligentes, sem duplicatas, seleção melhorada
 """
 
 import os
@@ -8,10 +9,11 @@ import winreg
 import subprocess
 import json
 from pathlib import Path
-from typing import Dict, List, Optional, Callable
+from typing import Dict, List, Optional, Callable, Set
 from dataclasses import dataclass
 import threading
 import time
+import re
 
 @dataclass
 class AppInfo:
@@ -25,14 +27,25 @@ class AppInfo:
     install_directory: Optional[str] = None
     app_type: str = "application"  # application, game, system, etc
     is_uwp: bool = False  # Universal Windows Platform app
+    priority: int = 0  # Para ordenação (apps mais importantes primeiro)
+    is_selectable: bool = True  # Se o app pode ser selecionado
     
     @property
     def app_id(self) -> str:
-        """ID único do app"""
-        return f"{self.name}_{hash(self.executable_path)}"
+        """ID único do app baseado no executável normalizado"""
+        normalized_path = os.path.normpath(self.executable_path.lower())
+        return f"{self.name.lower().strip()}_{hash(normalized_path)}"
+    
+    @property 
+    def display_name(self) -> str:
+        """Nome limpo para exibição"""
+        # Remove versões, parênteses e caracteres especiais
+        clean_name = re.sub(r'\s*\([^)]*\)', '', self.name)
+        clean_name = re.sub(r'\s*v?\d+\.\d+.*', '', clean_name)
+        return clean_name.strip()
 
 class UniversalAppScanner:
-    """Scanner universal de aplicativos do sistema"""
+    """Scanner universal de aplicativos do sistema com filtros inteligentes"""
     
     def __init__(self):
         self.apps_cache: Dict[str, AppInfo] = {}
@@ -42,11 +55,93 @@ class UniversalAppScanner:
             r"C:\Users\{}\AppData\Local\Programs".format(os.getenv('USERNAME')),
             r"C:\Users\{}\AppData\Roaming".format(os.getenv('USERNAME')),
         ]
+        
+        # Filtros para evitar duplicatas e apps não selecionáveis
+        self.excluded_names = {
+            'uninstall', 'setup', 'installer', 'updater', 'launcher',
+            'microsoft visual c++', 'microsoft .net', 'redistributable',
+            'runtime', 'framework', 'update for', 'security update',
+            'hotfix', 'kb', 'service pack', 'driver', 'directx'
+        }
+        
+        self.system_publishers = {
+            'microsoft corporation', 'intel corporation', 'nvidia corporation',
+            'amd', 'realtek', 'adobe systems incorporated'
+        }
+        
+        self.gaming_keywords = {
+            'game', 'gaming', 'steam', 'epic', 'ubisoft', 'origin', 'gog',
+            'blizzard', 'riot', 'valve', 'electronic arts', 'activision'
+        }
+    
+    def _is_duplicate(self, new_app: AppInfo, existing_apps: Dict[str, AppInfo]) -> bool:
+        """Verifica se o app é duplicata de um já existente"""
+        new_name_clean = new_app.display_name.lower().strip()
+        new_path_clean = os.path.normpath(new_app.executable_path.lower())
+        
+        for existing_app in existing_apps.values():
+            existing_name_clean = existing_app.display_name.lower().strip()
+            existing_path_clean = os.path.normpath(existing_app.executable_path.lower())
+            
+            # Mesmo nome e caminho similar
+            if new_name_clean == existing_name_clean:
+                if os.path.dirname(new_path_clean) == os.path.dirname(existing_path_clean):
+                    return True
+            
+            # Mesmo executável
+            if new_path_clean == existing_path_clean:
+                return True
+        
+        return False
+    
+    def _calculate_priority(self, app: AppInfo) -> int:
+        """Calcula prioridade do app (maior = mais importante)"""
+        priority = 50  # Base
+        
+        # Gaming apps têm prioridade alta
+        name_lower = app.name.lower()
+        if any(keyword in name_lower for keyword in self.gaming_keywords):
+            priority += 30
+        
+        # Apps populares
+        popular_apps = ['chrome', 'firefox', 'discord', 'spotify', 'vlc', 'obs', 'photoshop']
+        if any(popular in name_lower for popular in popular_apps):
+            priority += 20
+        
+        # Apps do sistema têm prioridade baixa
+        if app.publisher and app.publisher.lower() in self.system_publishers:
+            priority -= 20
+        
+        # UWP apps têm prioridade média
+        if app.is_uwp:
+            priority += 10
+        
+        return priority
+    
+    def _is_selectable(self, app: AppInfo) -> bool:
+        """Verifica se o app pode ser selecionado pelo usuário"""
+        name_lower = app.name.lower()
+        
+        # Não selecionáveis: instaladores, atualizadores, etc
+        if any(excluded in name_lower for excluded in self.excluded_names):
+            return False
+        
+        # Verificar se o executável existe e é acessível
+        if not os.path.exists(app.executable_path):
+            return False
+        
+        # Verificar se não é um arquivo do sistema crítico
+        system_paths = [r'c:\windows', r'c:\program files\windows']
+        for sys_path in system_paths:
+            if app.executable_path.lower().startswith(sys_path.lower()):
+                return False
+        
+        return True
     
     def scan_all_apps(self, progress_callback: Optional[Callable] = None) -> Dict[str, AppInfo]:
         """
         Busca TODOS os aplicativos instalados no sistema
-        Similar ao menu iniciar do Windows
+        Similar ao menu iniciar do Windows - COM FILTROS INTELIGENTES
         """
         apps_found = {}
         total_steps = 5
@@ -58,7 +153,7 @@ class UniversalAppScanner:
                 progress_callback("Buscando programas instalados...", current_step, total_steps)
             
             registry_apps = self._scan_registry_apps()
-            apps_found.update(registry_apps)
+            self._merge_apps_with_filters(apps_found, registry_apps)
             current_step += 1
             
             # 2. Apps UWP (Microsoft Store)
@@ -66,7 +161,7 @@ class UniversalAppScanner:
                 progress_callback("Buscando apps da Microsoft Store...", current_step, total_steps)
             
             uwp_apps = self._scan_uwp_apps()
-            apps_found.update(uwp_apps)
+            self._merge_apps_with_filters(apps_found, uwp_apps)
             current_step += 1
             
             # 3. Menu Iniciar
@@ -74,7 +169,7 @@ class UniversalAppScanner:
                 progress_callback("Buscando atalhos do menu iniciar...", current_step, total_steps)
             
             start_menu_apps = self._scan_start_menu()
-            apps_found.update(start_menu_apps)
+            self._merge_apps_with_filters(apps_found, start_menu_apps)
             current_step += 1
             
             # 4. Área de Trabalho
@@ -82,26 +177,46 @@ class UniversalAppScanner:
                 progress_callback("Buscando atalhos da área de trabalho...", current_step, total_steps)
             
             desktop_apps = self._scan_desktop()
-            apps_found.update(desktop_apps)
+            self._merge_apps_with_filters(apps_found, desktop_apps)
             current_step += 1
             
             # 5. Diretórios comuns de programas
             if progress_callback:
-                progress_callback("Buscando executáveis em diretórios...", current_step, total_steps)
+                progress_callback("Finalizando busca em diretórios...", current_step, total_steps)
             
             directory_apps = self._scan_common_directories()
-            apps_found.update(directory_apps)
+            self._merge_apps_with_filters(apps_found, directory_apps)
             current_step += 1
             
             if progress_callback:
-                progress_callback("Busca concluída!", current_step, total_steps)
+                progress_callback(f"Busca concluída! {len(apps_found)} apps encontrados", current_step, total_steps)
             
-            self.apps_cache = apps_found
-            return apps_found
+            # Aplicar filtros finais e ordenação
+            filtered_apps = self._apply_final_filters(apps_found)
+            self.apps_cache = filtered_apps
+            return filtered_apps
             
         except Exception as e:
             print(f"Erro na busca de apps: {e}")
             return apps_found
+    
+    def _merge_apps_with_filters(self, target_dict: Dict[str, AppInfo], source_dict: Dict[str, AppInfo]):
+        """Mescla apps evitando duplicatas"""
+        for app_id, app in source_dict.items():
+            if not self._is_duplicate(app, target_dict):
+                app.priority = self._calculate_priority(app)
+                app.is_selectable = self._is_selectable(app)
+                target_dict[app_id] = app
+    
+    def _apply_final_filters(self, apps: Dict[str, AppInfo]) -> Dict[str, AppInfo]:
+        """Aplica filtros finais e ordena por prioridade"""
+        # Filtrar apenas apps selecionáveis
+        selectable_apps = {k: v for k, v in apps.items() if v.is_selectable}
+        
+        # Ordenar por prioridade (maior primeiro)
+        sorted_items = sorted(selectable_apps.items(), key=lambda x: x[1].priority, reverse=True)
+        
+        return dict(sorted_items)
     
     def _scan_registry_apps(self) -> Dict[str, AppInfo]:
         """Busca apps no registro do Windows"""

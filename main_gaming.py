@@ -1,6 +1,6 @@
 """
 Interface Principal do Otimizador PC Gaming
-Versão com busca universal de apps e interface completa
+Versão ULTRA com busca universal, modos especiais e filtros inteligentes
 """
 
 import customtkinter as ctk
@@ -21,16 +21,17 @@ from optimizer.advanced_cleaner import AdvancedCleaner
 from optimizer.system_monitor import SystemMonitor
 from optimizer.schedule_manager import ScheduleManager
 from optimizer.universal_app_scanner import UniversalAppScanner, AppInfo
+from optimizer.special_modes import SpecialModes
 
 
 class AdvancedMainWindow(ctk.CTk):
-    """Janela principal do otimizador com interface completa"""
+    """Janela principal do otimizador com interface completa e modos especiais"""
     
     def __init__(self):
         super().__init__()
         
         # Configurar janela
-        self.title("🎮 Otimizador PC Gaming - Versão Completa")
+        self.title("🎮 Otimizador PC Gaming ULTRA - Versão Completa")
         self.geometry("1200x800")
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -43,6 +44,7 @@ class AdvancedMainWindow(ctk.CTk):
         self.advanced_cleaner = AdvancedCleaner()
         self.system_monitor = SystemMonitor()
         self.schedule_manager = ScheduleManager()
+        self.special_modes = SpecialModes(self.advanced_optimizer)
         
         # Dados
         self.apps_list: List[AppInfo] = []
@@ -98,6 +100,18 @@ class AdvancedMainWindow(ctk.CTk):
             font=("Arial", 12, "bold")
         )
         self.scan_all_btn.grid(row=0, column=2, padx=10, pady=10)
+        
+        # Botão Modos Especiais
+        self.special_modes_btn = ctk.CTkButton(
+            search_frame,
+            text="🚀 MODOS ESPECIAIS",
+            command=self.open_special_modes,
+            height=35,
+            font=("Arial", 12, "bold"),
+            fg_color="#ff6b35",
+            hover_color="#e55a2b"
+        )
+        self.special_modes_btn.grid(row=0, column=3, padx=10, pady=10)
         
         # Status da busca
         self.search_status = ctk.CTkLabel(search_frame, text="⚡ Digite para buscar ou clique em 'Buscar Todos'")
@@ -1205,6 +1219,28 @@ class AdvancedMainWindow(ctk.CTk):
         
         for task in example_tasks:
             self.tasks_listbox.insert(tk.END, task)
+    
+    def open_special_modes(self):
+        """Abre a janela de modos especiais"""
+        try:
+            # Importar aqui para evitar circular import
+            from special_modes_ui import SpecialModesWindow
+            
+            # Verificar se já existe uma janela aberta
+            if hasattr(self, 'special_modes_window') and self.special_modes_window.winfo_exists():
+                self.special_modes_window.lift()  # Trazer para frente
+                self.special_modes_window.focus()
+                return
+            
+            # Criar nova janela
+            self.special_modes_window = SpecialModesWindow(self, self.special_modes)
+            
+        except Exception as e:
+            messagebox.showerror(
+                "Erro", 
+                f"Erro ao abrir Modos Especiais:\n{e}\n\n"
+                "Verifique se todos os módulos estão instalados corretamente."
+            )
 
 
 def main():
