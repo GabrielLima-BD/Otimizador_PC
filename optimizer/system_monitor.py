@@ -525,3 +525,29 @@ class SystemMonitor:
     def is_monitoring(self):
         """Verifica se está monitorando"""
         return self.monitoring
+    
+    def get_top_processes(self, limit=10):
+        """Obtém os processos com maior uso de recursos"""
+        try:
+            processes = []
+            for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent']):
+                try:
+                    proc_info = proc.info
+                    if proc_info['cpu_percent'] > 0 or proc_info['memory_percent'] > 0:
+                        processes.append({
+                            'pid': proc_info['pid'],
+                            'name': proc_info['name'] or 'Unknown',
+                            'cpu_percent': proc_info['cpu_percent'] or 0,
+                            'memory_percent': proc_info['memory_percent'] or 0
+                        })
+                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                    continue
+            
+            # Ordenar por uso de CPU e RAM
+            processes.sort(key=lambda x: x['cpu_percent'] + x['memory_percent'], reverse=True)
+            
+            return processes[:limit]
+        
+        except Exception as e:
+            self.logger.error(f"Erro ao obter processos: {e}")
+            return []

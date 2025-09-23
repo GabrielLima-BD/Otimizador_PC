@@ -413,3 +413,735 @@ class AdvancedOptimizer:
             'total_optimizations': len(self.optimizations_applied),
             'optimizations': self.optimizations_applied
         }
+    
+    def disable_system_services(self, progress_callback=None):
+        """🔧 Sistema e Hardware - Desativa serviços desnecessários"""
+        if progress_callback:
+            progress_callback("Desativando serviços de sistema desnecessários...", 0)
+        
+        services_to_disable = [
+            'BDESVC',           # BitLocker Drive Encryption Service
+            'WerSvc',           # Windows Error Reporting Service
+            'RemoteAccess',     # Routing and Remote Access
+            'RemoteRegistry',   # Remote Registry
+            'TermService',      # Remote Desktop Services
+            'WMPNetworkSvc',    # Windows Media Player Network Sharing Service
+            'TabletInputService', # Touch Keyboard and Handwriting Panel Service
+            'StorSvc',          # Storage Service
+            'lfsvc',            # Geolocation Service
+            'WbioSrvc',         # Windows Biometric Service
+            'icssvc',           # Windows Mobile Hotspot Service
+            'WpnService',       # Windows Push Notification Service
+            'Spooler',          # Print Spooler
+            'Fax',              # Fax service
+            'ScDeviceEnum',     # Smart Card Device Enumeration Service
+            'SCardSvr',         # Smart Card service
+        ]
+        
+        disabled_count = 0
+        for i, service in enumerate(services_to_disable):
+            if progress_callback:
+                progress = (i / len(services_to_disable)) * 100
+                progress_callback(f"Desativando serviço: {service}", progress)
+            
+            try:
+                # Parar o serviço
+                subprocess.run(['sc', 'stop', service], 
+                             capture_output=True, text=True, timeout=10)
+                
+                # Desabilitar o serviço
+                result = subprocess.run(['sc', 'config', service, 'start=', 'disabled'], 
+                                      capture_output=True, text=True, timeout=10)
+                
+                if result.returncode == 0:
+                    disabled_count += 1
+                    self.optimizations_applied.append(f"Serviço desabilitado: {service}")
+                    
+            except Exception as e:
+                self.logger.warning(f"Erro ao desabilitar serviço {service}: {e}")
+        
+        self.logger.info(f"Serviços desabilitados: {disabled_count}/{len(services_to_disable)}")
+        return disabled_count
+    
+    def optimize_registry_advanced(self, progress_callback=None):
+        """🧠 Registro Avançado - Otimizações avançadas do registro"""
+        if progress_callback:
+            progress_callback("Aplicando otimizações avançadas do registro...", 0)
+        
+        registry_optimizations = [
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer',
+                'values': {
+                    'NoRecentDocsHistory': (winreg.REG_DWORD, 1),  # Não salvar histórico de documentos
+                    'NoRecentDocsMenu': (winreg.REG_DWORD, 1),     # Não mostrar documentos recentes
+                    'NoResolveTrack': (winreg.REG_DWORD, 1),       # Não rastrear links quebrados
+                    'NoResolveSearch': (winreg.REG_DWORD, 1),      # Não buscar links perdidos
+                }
+            },
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\Device Metadata',
+                'values': {
+                    'PreventDeviceMetadataFromNetwork': (winreg.REG_DWORD, 1),  # Não baixar metadados de dispositivos
+                }
+            },
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching',
+                'values': {
+                    'SearchOrderConfig': (winreg.REG_DWORD, 0),  # Não buscar drivers online
+                    'DontSearchWindowsUpdate': (winreg.REG_DWORD, 1),  # Não buscar no Windows Update
+                }
+            },
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsBackup\DisableMonitoring',
+                'values': {
+                    'DisableMonitoring': (winreg.REG_DWORD, 1),  # Desabilitar monitoramento de backup
+                }
+            },
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\StorageHealth\Events',
+                'values': {
+                    'DisableEventLogging': (winreg.REG_DWORD, 1),  # Desabilitar logs de armazenamento
+                }
+            },
+        ]
+        
+        applied_count = 0
+        for i, reg_setting in enumerate(registry_optimizations):
+            if progress_callback:
+                progress = (i / len(registry_optimizations)) * 100
+                progress_callback(f"Aplicando configuração {i+1}/{len(registry_optimizations)}", progress)
+            
+            try:
+                with winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, reg_setting['key']) as key:
+                    for value_name, (reg_type, value_data) in reg_setting['values'].items():
+                        winreg.SetValueEx(key, value_name, 0, reg_type, value_data)
+                        applied_count += 1
+                        self.optimizations_applied.append(f"Registro otimizado: {reg_setting['key']}\\{value_name}")
+                        
+            except Exception as e:
+                self.logger.warning(f"Erro ao aplicar configuração de registro: {e}")
+        
+        self.logger.info(f"Configurações de registro aplicadas: {applied_count}")
+        return applied_count
+    
+    def optimize_network_advanced(self, progress_callback=None):
+        """🌐 Rede e Internet - Otimizações avançadas de rede"""
+        if progress_callback:
+            progress_callback("Desativando serviços de rede desnecessários...", 0)
+        
+        network_services = [
+            'DoSvc',            # Delivery Optimization
+            'SharedAccess',     # Internet Connection Sharing
+            'icssvc',           # Windows Mobile Hotspot Service
+            'NlaSvc',           # Network Location Awareness (cuidado)
+            'W32Time',          # Windows Time
+            'upnphost',         # UPnP Device Host
+            'SSDPSRV',          # SSDP Discovery
+            'wcncsvc',          # Windows Connect Now - Config Registrar
+        ]
+        
+        # Configurações de registro para rede
+        network_registry = [
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config',
+                'values': {
+                    'DODownloadMode': (winreg.REG_DWORD, 0),  # Desabilitar Delivery Optimization
+                }
+            },
+            {
+                'key': r'SYSTEM\CurrentControlSet\Services\Dnscache\Parameters',
+                'values': {
+                    'DisableParallelAandAAAA': (winreg.REG_DWORD, 1),  # Melhorar resolução DNS
+                }
+            },
+            {
+                'key': r'SYSTEM\CurrentControlSet\Services\Tcpip\Parameters',
+                'values': {
+                    'EnablePMTUDiscovery': (winreg.REG_DWORD, 1),      # Descoberta de MTU
+                    'EnablePMTUBHDetect': (winreg.REG_DWORD, 0),       # Desabilitar detecção de buraco negro
+                    'TcpAckFrequency': (winreg.REG_DWORD, 1),          # Frequência de ACK
+                    'TCPNoDelay': (winreg.REG_DWORD, 1),               # Sem delay TCP
+                }
+            },
+        ]
+        
+        disabled_count = 0
+        
+        # Desabilitar serviços de rede
+        for i, service in enumerate(network_services):
+            if progress_callback:
+                progress = (i / (len(network_services) + len(network_registry))) * 50
+                progress_callback(f"Desativando serviço de rede: {service}", progress)
+            
+            try:
+                subprocess.run(['sc', 'stop', service], 
+                             capture_output=True, text=True, timeout=10)
+                result = subprocess.run(['sc', 'config', service, 'start=', 'disabled'], 
+                                      capture_output=True, text=True, timeout=10)
+                if result.returncode == 0:
+                    disabled_count += 1
+                    self.optimizations_applied.append(f"Serviço de rede desabilitado: {service}")
+            except Exception as e:
+                self.logger.warning(f"Erro ao desabilitar serviço de rede {service}: {e}")
+        
+        # Aplicar configurações de registro
+        for i, reg_setting in enumerate(network_registry):
+            if progress_callback:
+                progress = 50 + ((i / len(network_registry)) * 50)
+                progress_callback(f"Aplicando configuração de rede {i+1}/{len(network_registry)}", progress)
+            
+            try:
+                with winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, reg_setting['key']) as key:
+                    for value_name, (reg_type, value_data) in reg_setting['values'].items():
+                        winreg.SetValueEx(key, value_name, 0, reg_type, value_data)
+                        self.optimizations_applied.append(f"Rede otimizada: {value_name}")
+            except Exception as e:
+                self.logger.warning(f"Erro ao aplicar configuração de rede: {e}")
+        
+        self.logger.info(f"Otimizações de rede aplicadas: {disabled_count} serviços desabilitados")
+        return disabled_count
+    
+    def disable_diagnostic_services(self, progress_callback=None):
+        """🧪 Diagnóstico e Monitoramento - Desativa serviços de diagnóstico"""
+        if progress_callback:
+            progress_callback("Desativando serviços de diagnóstico e monitoramento...", 0)
+        
+        diagnostic_services = [
+            'PerfLogsAlerts',   # Performance Logs & Alerts
+            'DPS',              # Diagnostic Policy Service
+            'WdiServiceHost',   # Diagnostic Service Host
+            'WdiSystemHost',    # Diagnostic System Host
+            'TrkWks',           # Distributed Link Tracking Client
+            'dmwappushservice', # dmwappushsvc (Data Usage)
+            'DiagTrack',        # Connected User Experiences and Telemetry
+            'RetailDemo',       # Retail Demo Service
+        ]
+        
+        # Configurações de registro para diagnóstico
+        diagnostic_registry = [
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection',
+                'values': {
+                    'AllowTelemetry': (winreg.REG_DWORD, 0),  # Desabilitar telemetria
+                    'MaxTelemetryAllowed': (winreg.REG_DWORD, 0),  # Telemetria máxima = 0
+                }
+            },
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\Privacy',
+                'values': {
+                    'TailoredExperiencesWithDiagnosticDataEnabled': (winreg.REG_DWORD, 0),  # Experiências personalizadas
+                }
+            },
+            {
+                'key': r'SYSTEM\CurrentControlSet\Control\WMI\Autologger\AutoLogger-Diagtrack-Listener',
+                'values': {
+                    'Start': (winreg.REG_DWORD, 0),  # Desabilitar AutoLogger DiagTrack
+                }
+            },
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack',
+                'values': {
+                    'ShowedToastAtLevel': (winreg.REG_DWORD, 1),  # Não mostrar notificações de diagnóstico
+                }
+            },
+        ]
+        
+        disabled_count = 0
+        
+        # Desabilitar serviços de diagnóstico
+        for i, service in enumerate(diagnostic_services):
+            if progress_callback:
+                progress = (i / (len(diagnostic_services) + len(diagnostic_registry))) * 50
+                progress_callback(f"Desativando serviço de diagnóstico: {service}", progress)
+            
+            try:
+                subprocess.run(['sc', 'stop', service], 
+                             capture_output=True, text=True, timeout=10)
+                result = subprocess.run(['sc', 'config', service, 'start=', 'disabled'], 
+                                      capture_output=True, text=True, timeout=10)
+                if result.returncode == 0:
+                    disabled_count += 1
+                    self.optimizations_applied.append(f"Serviço de diagnóstico desabilitado: {service}")
+            except Exception as e:
+                self.logger.warning(f"Erro ao desabilitar serviço de diagnóstico {service}: {e}")
+        
+        # Aplicar configurações de registro
+        for i, reg_setting in enumerate(diagnostic_registry):
+            if progress_callback:
+                progress = 50 + ((i / len(diagnostic_registry)) * 50)
+                progress_callback(f"Aplicando configuração de diagnóstico {i+1}/{len(diagnostic_registry)}", progress)
+            
+            try:
+                with winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, reg_setting['key']) as key:
+                    for value_name, (reg_type, value_data) in reg_setting['values'].items():
+                        winreg.SetValueEx(key, value_name, 0, reg_type, value_data)
+                        self.optimizations_applied.append(f"Diagnóstico desabilitado: {value_name}")
+            except Exception as e:
+                self.logger.warning(f"Erro ao aplicar configuração de diagnóstico: {e}")
+        
+        self.logger.info(f"Serviços de diagnóstico desabilitados: {disabled_count}")
+        return disabled_count
+    
+    def apply_all_advanced_optimizations(self, progress_callback=None):
+        """Aplica todas as otimizações avançadas de uma vez"""
+        if progress_callback:
+            progress_callback("Iniciando otimizações avançadas completas...", 0)
+        
+        total_optimizations = 0
+        
+        # Sistema e Hardware
+        if progress_callback:
+            progress_callback("🔧 Otimizando sistema e hardware...", 20)
+        total_optimizations += self.disable_system_services()
+        
+        # Registro Avançado
+        if progress_callback:
+            progress_callback("🧠 Aplicando otimizações de registro...", 40)
+        total_optimizations += self.optimize_registry_advanced()
+        
+        # Rede e Internet
+        if progress_callback:
+            progress_callback("🌐 Otimizando configurações de rede...", 60)
+        total_optimizations += self.optimize_network_advanced()
+        
+        # Diagnóstico e Monitoramento
+        if progress_callback:
+            progress_callback("🧪 Desativando serviços de diagnóstico...", 80)
+        total_optimizations += self.disable_diagnostic_services()
+        
+        if progress_callback:
+            progress_callback("✅ Otimizações avançadas concluídas!", 100)
+        
+        self.logger.info(f"Total de otimizações avançadas aplicadas: {total_optimizations}")
+        return total_optimizations
+    
+    def disable_boot_system_services(self, progress_callback=None):
+        """🔧 Sistema e Boot - Desativa serviços avançados de sistema e boot"""
+        if progress_callback:
+            progress_callback("Desativando serviços avançados de sistema e boot...", 0)
+        
+        boot_services = [
+            'PcaSvc',           # Program Compatibility Assistant Service
+            'WEPHOSTSVC',       # Windows Encryption Provider Host Service
+            'BackupSrv',        # Windows Backup Service  
+            'BackgroundTaskInfrastructureService',  # Background Tasks Infrastructure Service
+            'WindowsSpotlightService',  # Windows Spotlight Service
+            'WinHttpAutoProxySvc',  # WinHTTP Web Proxy Auto-Discovery Service
+            'FontCache',        # Windows Font Cache Service
+            'StiSvc',           # Windows Image Acquisition (WIA)
+        ]
+        
+        # Configurações de registro para boot
+        boot_registry = [
+            {
+                'key': r'SYSTEM\CurrentControlSet\Control\CI\Policy',
+                'values': {
+                    'VerifyDriverSignature': (winreg.REG_DWORD, 0),  # ⚠️ Desativar verificação de assinatura de driver
+                }
+            },
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
+                'values': {
+                    'EnableInstallerDetection': (winreg.REG_DWORD, 0),  # Desativar detecção de instalador
+                    'EnableSecureUIAPaths': (winreg.REG_DWORD, 0),     # Desativar caminhos seguros de UI
+                }
+            },
+        ]
+        
+        disabled_count = 0
+        
+        # Desabilitar serviços de boot
+        for i, service in enumerate(boot_services):
+            if progress_callback:
+                progress = (i / (len(boot_services) + len(boot_registry))) * 50
+                progress_callback(f"Desativando serviço de boot: {service}", progress)
+            
+            try:
+                subprocess.run(['sc', 'stop', service], 
+                             capture_output=True, text=True, timeout=10)
+                result = subprocess.run(['sc', 'config', service, 'start=', 'disabled'], 
+                                      capture_output=True, text=True, timeout=10)
+                if result.returncode == 0:
+                    disabled_count += 1
+                    self.optimizations_applied.append(f"Serviço de boot desabilitado: {service}")
+            except Exception as e:
+                self.logger.warning(f"Erro ao desabilitar serviço de boot {service}: {e}")
+        
+        # Aplicar configurações de registro para boot
+        for i, reg_setting in enumerate(boot_registry):
+            if progress_callback:
+                progress = 50 + ((i / len(boot_registry)) * 50)
+                progress_callback(f"Aplicando configuração de boot {i+1}/{len(boot_registry)}", progress)
+            
+            try:
+                with winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, reg_setting['key']) as key:
+                    for value_name, (reg_type, value_data) in reg_setting['values'].items():
+                        winreg.SetValueEx(key, value_name, 0, reg_type, value_data)
+                        self.optimizations_applied.append(f"Boot otimizado: {value_name}")
+            except Exception as e:
+                self.logger.warning(f"Erro ao aplicar configuração de boot: {e}")
+        
+        self.logger.info(f"Serviços de boot desabilitados: {disabled_count}")
+        return disabled_count
+    
+    def optimize_kernel_registry(self, progress_callback=None):
+        """🧠 Registro e Kernel - Otimizações avançadas de kernel e registro"""
+        if progress_callback:
+            progress_callback("Aplicando otimizações avançadas de kernel e registro...", 0)
+        
+        kernel_registry = [
+            {
+                'key': r'SYSTEM\CurrentControlSet\Control\PriorityControl',
+                'values': {
+                    'Win32PrioritySeparation': (winreg.REG_DWORD, 42),  # Prioridade máxima para foreground
+                    'IRQ8Priority': (winreg.REG_DWORD, 1),             # Timer alta prioridade
+                    'IRQ0Priority': (winreg.REG_DWORD, 1),             # Sistema alta prioridade
+                }
+            },
+            {
+                'key': r'SYSTEM\CurrentControlSet\Control\Update\Policy',
+                'values': {
+                    'DisableCompatibilityCheck': (winreg.REG_DWORD, 1),  # Desativar verificação de compatibilidade
+                }
+            },
+            {
+                'key': r'SYSTEM\CurrentControlSet\Services\kbdclass\Parameters',
+                'values': {
+                    'KeyboardDataQueueSize': (winreg.REG_DWORD, 64),      # Buffer teclado
+                    'KeyboardDeviceStackSize': (winreg.REG_DWORD, 8),     # Stack teclado  
+                }
+            },
+            {
+                'key': r'SYSTEM\CurrentControlSet\Services\mouclass\Parameters',
+                'values': {
+                    'MouseDataQueueSize': (winreg.REG_DWORD, 64),         # Buffer mouse
+                    'MouseDeviceStackSize': (winreg.REG_DWORD, 8),        # Stack mouse
+                }
+            },
+            {
+                'key': r'SYSTEM\CurrentControlSet\Control\Session Manager\kernel',
+                'values': {
+                    'DisableExceptionChainValidation': (winreg.REG_DWORD, 1),  # Desativar validação de exceção
+                    'ObCaseInsensitive': (winreg.REG_DWORD, 1),                # Case insensitive
+                }
+            },
+            {
+                'key': r'SYSTEM\CurrentControlSet\Control\WMI\Autologger',
+                'values': {
+                    'Start': (winreg.REG_DWORD, 0),  # Desativar todos os autologgers
+                }
+            },
+        ]
+        
+        applied_count = 0
+        for i, reg_setting in enumerate(kernel_registry):
+            if progress_callback:
+                progress = (i / len(kernel_registry)) * 100
+                progress_callback(f"Aplicando configuração de kernel {i+1}/{len(kernel_registry)}", progress)
+            
+            try:
+                with winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, reg_setting['key']) as key:
+                    for value_name, (reg_type, value_data) in reg_setting['values'].items():
+                        winreg.SetValueEx(key, value_name, 0, reg_type, value_data)
+                        applied_count += 1
+                        self.optimizations_applied.append(f"Kernel otimizado: {value_name}")
+                        
+            except Exception as e:
+                self.logger.warning(f"Erro ao aplicar configuração de kernel: {e}")
+        
+        self.logger.info(f"Configurações de kernel aplicadas: {applied_count}")
+        return applied_count
+    
+    def optimize_network_ultra_advanced(self, progress_callback=None):
+        """🌐 Rede e Internet - Otimizações ultra avançadas de rede"""
+        if progress_callback:
+            progress_callback("Aplicando otimizações ultra avançadas de rede...", 0)
+        
+        ultra_network_services = [
+            'NetSetupSvc',      # Network Setup Service
+            'WinRM',            # Windows Remote Management
+            'RpcLocator',       # Remote Procedure Call (RPC) Locator
+            'PNRPsvc',          # Peer Name Resolution Protocol
+            'p2psvc',           # Peer-to-Peer Grouping
+            'p2pimsvc',         # Peer-to-Peer Identity Manager
+            'PNRPAutoReg',      # PNRP Machine Name Publication Service
+        ]
+        
+        # Configurações ultra avançadas de rede
+        ultra_network_registry = [
+            {
+                'key': r'SYSTEM\CurrentControlSet\Services\NetBT\Parameters\Interfaces',
+                'values': {
+                    'NetbiosOptions': (winreg.REG_DWORD, 2),  # Desabilitar NetBIOS
+                }
+            },
+            {
+                'key': r'SYSTEM\CurrentControlSet\Services\Tcpip\Parameters',
+                'values': {
+                    'TcpWindowSize': (winreg.REG_DWORD, 65536),            # Janela TCP otimizada
+                    'DefaultTTL': (winreg.REG_DWORD, 64),                  # TTL otimizado
+                    'TcpMaxDupAcks': (winreg.REG_DWORD, 2),                # ACKs duplicados
+                    'SackOpts': (winreg.REG_DWORD, 1),                     # Selective ACK
+                    'TcpTimedWaitDelay': (winreg.REG_DWORD, 30),           # Delay wait reduzido
+                    'MaxFreeTcbs': (winreg.REG_DWORD, 65536),              # TCBs livres
+                    'MaxHashTableSize': (winreg.REG_DWORD, 65536),         # Hash table
+                }
+            },
+            {
+                'key': r'SYSTEM\CurrentControlSet\Services\AFD\Parameters',
+                'values': {
+                    'EnableDynamicBacklog': (winreg.REG_DWORD, 1),         # Backlog dinâmico
+                    'MinimumDynamicBacklog': (winreg.REG_DWORD, 128),      # Backlog mínimo
+                    'MaximumDynamicBacklog': (winreg.REG_DWORD, 1024),     # Backlog máximo
+                    'FastSendDatagramThreshold': (winreg.REG_DWORD, 1024), # Threshold fast send
+                }
+            },
+        ]
+        
+        disabled_count = 0
+        
+        # Desabilitar serviços ultra avançados de rede
+        for i, service in enumerate(ultra_network_services):
+            if progress_callback:
+                progress = (i / (len(ultra_network_services) + len(ultra_network_registry))) * 50
+                progress_callback(f"Desativando serviço ultra de rede: {service}", progress)
+            
+            try:
+                subprocess.run(['sc', 'stop', service], 
+                             capture_output=True, text=True, timeout=10)
+                result = subprocess.run(['sc', 'config', service, 'start=', 'disabled'], 
+                                      capture_output=True, text=True, timeout=10)
+                if result.returncode == 0:
+                    disabled_count += 1
+                    self.optimizations_applied.append(f"Serviço ultra de rede desabilitado: {service}")
+            except Exception as e:
+                self.logger.warning(f"Erro ao desabilitar serviço ultra de rede {service}: {e}")
+        
+        # Aplicar configurações ultra avançadas de rede
+        for i, reg_setting in enumerate(ultra_network_registry):
+            if progress_callback:
+                progress = 50 + ((i / len(ultra_network_registry)) * 50)
+                progress_callback(f"Aplicando configuração ultra de rede {i+1}/{len(ultra_network_registry)}", progress)
+            
+            try:
+                with winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, reg_setting['key']) as key:
+                    for value_name, (reg_type, value_data) in reg_setting['values'].items():
+                        winreg.SetValueEx(key, value_name, 0, reg_type, value_data)
+                        self.optimizations_applied.append(f"Rede ultra otimizada: {value_name}")
+            except Exception as e:
+                self.logger.warning(f"Erro ao aplicar configuração ultra de rede: {e}")
+        
+        self.logger.info(f"Otimizações ultra de rede aplicadas: {disabled_count} serviços desabilitados")
+        return disabled_count
+    
+    def disable_advanced_extras(self, progress_callback=None):
+        """🛠 Extras Avançados - Desativa recursos avançados desnecessários"""
+        if progress_callback:
+            progress_callback("Desativando recursos extras avançados...", 0)
+        
+        extras_services = [
+            'vmickvpexchange',   # Hyper-V Data Exchange Service
+            'vmicguestinterface', # Hyper-V Guest Service Interface
+            'vmicshutdown',      # Hyper-V Guest Shutdown Service
+            'vmicheartbeat',     # Hyper-V Heartbeat Service
+            'vmicvss',           # Hyper-V Volume Shadow Copy Requestor
+            'vmictimesync',      # Hyper-V Time Synchronization Service
+            'vmicrdv',           # Hyper-V Remote Desktop Virtualization Service
+            'HvHost',            # HV Host Service
+            'WinDefend',         # Windows Defender Antivirus Service
+            'SecurityHealthService',  # Windows Security Service
+            'Sense',             # Windows Defender ATP Service
+        ]
+        
+        # Configurações para desativar recursos extras
+        extras_registry = [
+            {
+                'key': r'SYSTEM\CurrentControlSet\Control\DeviceGuard',
+                'values': {
+                    'EnableVirtualizationBasedSecurity': (winreg.REG_DWORD, 0),  # Desativar VBS
+                }
+            },
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
+                'values': {
+                    'EnableVirtualization': (winreg.REG_DWORD, 0),               # Desativar virtualização
+                }
+            },
+            {
+                'key': r'SOFTWARE\Policies\Microsoft\Windows Defender',
+                'values': {
+                    'DisableAntiSpyware': (winreg.REG_DWORD, 1),                 # Desativar Windows Defender
+                    'DisableRealtimeMonitoring': (winreg.REG_DWORD, 1),          # Desativar monitoramento em tempo real
+                }
+            },
+            {
+                'key': r'SOFTWARE\Policies\Microsoft\Windows Defender\SmartScreen',
+                'values': {
+                    'ConfigureAppInstallControlEnabled': (winreg.REG_DWORD, 0),  # Desativar SmartScreen
+                }
+            },
+        ]
+        
+        disabled_count = 0
+        
+        # Desabilitar serviços extras
+        for i, service in enumerate(extras_services):
+            if progress_callback:
+                progress = (i / (len(extras_services) + len(extras_registry))) * 50
+                progress_callback(f"Desativando serviço extra: {service}", progress)
+            
+            try:
+                subprocess.run(['sc', 'stop', service], 
+                             capture_output=True, text=True, timeout=10)
+                result = subprocess.run(['sc', 'config', service, 'start=', 'disabled'], 
+                                      capture_output=True, text=True, timeout=10)
+                if result.returncode == 0:
+                    disabled_count += 1
+                    self.optimizations_applied.append(f"Serviço extra desabilitado: {service}")
+            except Exception as e:
+                self.logger.warning(f"Erro ao desabilitar serviço extra {service}: {e}")
+        
+        # Aplicar configurações extras
+        for i, reg_setting in enumerate(extras_registry):
+            if progress_callback:
+                progress = 50 + ((i / len(extras_registry)) * 50)
+                progress_callback(f"Aplicando configuração extra {i+1}/{len(extras_registry)}", progress)
+            
+            try:
+                with winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, reg_setting['key']) as key:
+                    for value_name, (reg_type, value_data) in reg_setting['values'].items():
+                        winreg.SetValueEx(key, value_name, 0, reg_type, value_data)
+                        self.optimizations_applied.append(f"Extra desabilitado: {value_name}")
+            except Exception as e:
+                self.logger.warning(f"Erro ao aplicar configuração extra: {e}")
+        
+        self.logger.info(f"Recursos extras desabilitados: {disabled_count}")
+        return disabled_count
+    
+    def disable_ultra_diagnostic_telemetry(self, progress_callback=None):
+        """🧪 Diagnóstico e Telemetria Ultra - Desativa completamente diagnósticos e telemetria"""
+        if progress_callback:
+            progress_callback("Desativando diagnóstico e telemetria ultra avançados...", 0)
+        
+        ultra_diagnostic_services = [
+            'DiagTrack',        # Connected User Experiences and Telemetry
+            'dmwappushservice', # Device Management Wireless Application Protocol
+            'DsSvc',            # Data Sharing Service
+            'MapsBroker',       # Downloaded Maps Manager
+            'NetTcpPortSharing', # Net.Tcp Port Sharing Service
+        ]
+        
+        # Configurações ultra avançadas de telemetria
+        ultra_telemetry_registry = [
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection',
+                'values': {
+                    'AllowTelemetry': (winreg.REG_DWORD, 0),                    # Telemetria = 0
+                    'DoNotShowFeedbackNotifications': (winreg.REG_DWORD, 1),   # Sem notificações de feedback
+                    'MaxTelemetryAllowed': (winreg.REG_DWORD, 0),              # Máxima telemetria = 0
+                }
+            },
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\Privacy',
+                'values': {
+                    'TailoredExperiencesWithDiagnosticDataEnabled': (winreg.REG_DWORD, 0),  # Sem experiências personalizadas
+                }
+            },
+            {
+                'key': r'SOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\EventTranscriptKey',
+                'values': {
+                    'EnableEventTranscript': (winreg.REG_DWORD, 0),            # Desativar transcript de eventos
+                }
+            },
+            {
+                'key': r'SYSTEM\CurrentControlSet\Control\WMI\Autologger\AutoLogger-Diagtrack-Listener',
+                'values': {
+                    'Start': (winreg.REG_DWORD, 0),                            # Desativar AutoLogger
+                }
+            },
+            {
+                'key': r'SYSTEM\CurrentControlSet\Control\WMI\Autologger\SQMLogger',
+                'values': {
+                    'Start': (winreg.REG_DWORD, 0),                            # Desativar SQM Logger
+                }
+            },
+        ]
+        
+        disabled_count = 0
+        
+        # Desabilitar serviços ultra de diagnóstico
+        for i, service in enumerate(ultra_diagnostic_services):
+            if progress_callback:
+                progress = (i / (len(ultra_diagnostic_services) + len(ultra_telemetry_registry))) * 50
+                progress_callback(f"Desativando serviço ultra de diagnóstico: {service}", progress)
+            
+            try:
+                subprocess.run(['sc', 'stop', service], 
+                             capture_output=True, text=True, timeout=10)
+                result = subprocess.run(['sc', 'config', service, 'start=', 'disabled'], 
+                                      capture_output=True, text=True, timeout=10)
+                if result.returncode == 0:
+                    disabled_count += 1
+                    self.optimizations_applied.append(f"Serviço ultra de diagnóstico desabilitado: {service}")
+            except Exception as e:
+                self.logger.warning(f"Erro ao desabilitar serviço ultra de diagnóstico {service}: {e}")
+        
+        # Aplicar configurações ultra de telemetria
+        for i, reg_setting in enumerate(ultra_telemetry_registry):
+            if progress_callback:
+                progress = 50 + ((i / len(ultra_telemetry_registry)) * 50)
+                progress_callback(f"Aplicando configuração ultra de telemetria {i+1}/{len(ultra_telemetry_registry)}", progress)
+            
+            try:
+                with winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, reg_setting['key']) as key:
+                    for value_name, (reg_type, value_data) in reg_setting['values'].items():
+                        winreg.SetValueEx(key, value_name, 0, reg_type, value_data)
+                        self.optimizations_applied.append(f"Telemetria ultra desabilitada: {value_name}")
+            except Exception as e:
+                self.logger.warning(f"Erro ao aplicar configuração ultra de telemetria: {e}")
+        
+        self.logger.info(f"Diagnóstico ultra desabilitado: {disabled_count}")
+        return disabled_count
+    
+    def apply_all_ultra_advanced_optimizations(self, progress_callback=None):
+        """Aplica TODAS as otimizações ultra avançadas de uma vez"""
+        if progress_callback:
+            progress_callback("Iniciando otimizações ULTRA AVANÇADAS completas...", 0)
+        
+        total_optimizations = 0
+        
+        # Sistema e Boot
+        if progress_callback:
+            progress_callback("🔧 Otimizando sistema e boot ultra avançados...", 10)
+        total_optimizations += self.disable_boot_system_services()
+        
+        # Kernel e Registro
+        if progress_callback:
+            progress_callback("🧠 Aplicando otimizações de kernel e registro...", 25)
+        total_optimizations += self.optimize_kernel_registry()
+        
+        # Rede Ultra Avançada
+        if progress_callback:
+            progress_callback("🌐 Otimizando rede ultra avançada...", 40)
+        total_optimizations += self.optimize_network_ultra_advanced()
+        
+        # Extras Avançados
+        if progress_callback:
+            progress_callback("🛠 Desativando recursos extras avançados...", 60)
+        total_optimizations += self.disable_advanced_extras()
+        
+        # Diagnóstico Ultra
+        if progress_callback:
+            progress_callback("🧪 Desativando diagnóstico e telemetria ultra...", 80)
+        total_optimizations += self.disable_ultra_diagnostic_telemetry()
+        
+        # Aplicar otimizações básicas também
+        if progress_callback:
+            progress_callback("⚡ Aplicando todas as otimizações anteriores...", 90)
+        total_optimizations += self.apply_all_advanced_optimizations()
+        
+        if progress_callback:
+            progress_callback("✅ TODAS as otimizações ULTRA AVANÇADAS concluídas!", 100)
+        
+        self.logger.info(f"Total de otimizações ULTRA AVANÇADAS aplicadas: {total_optimizations}")
+        return total_optimizations
