@@ -1,0 +1,115 @@
+{
+    "application": {
+        "name": "Otimizador Windows 10 Pro",
+        "version": "1.0.0",
+        "author": "Sistema de Otimização Inteligente",
+        "theme": "dark",
+        "language": "pt-br"
+    },
+    "optimization": {
+        "safe_mode": true,
+        "create_backup": true,
+        "auto_restart_warning": true,
+        "confirmation_dialogs": true
+    },
+    "cleaner": {
+        "temp_directories": [
+            "%TEMP%",
+            "%TMP%", 
+            "%WINDIR%\\Temp",
+            "%LOCALAPPDATA%\\Temp"
+        ],
+        "browser_cache": {
+            "chrome": true,
+            "edge": true,
+            "firefox": true,
+            "opera": false,
+            "brave": false
+        },
+        "clean_recycle_bin": true,
+        "clean_thumbnails": true,
+        "clean_logs": true
+    },
+    "performance": {
+        "power_plan": "high_performance",
+        "disable_visual_effects": true,
+        "disable_indexing": true,
+        "optimize_startup": true,
+        "disable_unnecessary_services": true,
+        "services_to_disable": [
+            "WSearch",
+            "SysMain", 
+            "Themes",
+            "TabletInputService",
+            "WbioSrvc",
+            "WMPNetworkSvc",
+            "WerSvc",
+            "DiagTrack",
+            "RetailDemo"
+        ]
+    },
+    "network": {
+        "default_dns": "Cloudflare",
+        "dns_servers": {
+            "Cloudflare": ["1.1.1.1", "1.0.0.1"],
+            "Google": ["8.8.8.8", "8.8.4.4"],
+            "Quad9": ["9.9.9.9", "149.112.112.112"],
+            "OpenDNS": ["208.67.222.222", "208.67.220.220"]
+        },
+        "optimize_tcp": true,
+        "disable_qos": true,
+        "optimize_adapter": true
+    },
+    "registry": {
+        "disable_telemetry": true,
+        "disable_cortana": true,
+        "disable_tips": true,
+        "optimize_explorer": true,
+        "disable_background_apps": true,
+        "disable_location_tracking": true
+    },
+    "bloatware": {
+        "remove_automatically": false,
+        "apps_to_remove": [
+            "Microsoft.3DBuilder",
+            "Microsoft.BingFinance",
+            "Microsoft.BingNews",
+            "Microsoft.BingSports",
+            "Microsoft.BingWeather",
+            "Microsoft.Getstarted",
+            "Microsoft.MicrosoftSolitaireCollection",
+            "Microsoft.People",
+            "Microsoft.SkypeApp",
+            "Microsoft.WindowsAlarms",
+            "Microsoft.WindowsCamera",
+            "Microsoft.WindowsMaps",
+            "Microsoft.WindowsSoundRecorder",
+            "Microsoft.XboxApp",
+            "Microsoft.ZuneMusic",
+            "Microsoft.ZuneVideo"
+        ]
+    },
+    "security": {
+        "disable_defender": false,
+        "warn_dangerous_operations": true,
+        "require_admin": true,
+        "create_restore_point": true
+    },
+    "logging": {
+        "level": "INFO",
+        "max_log_files": 10,
+        "max_log_size_mb": 50,
+        "log_to_file": true,
+        "log_to_console": true
+    },
+    "ui": {
+        "show_welcome": true,
+        "auto_refresh_logs": true,
+        "progress_updates": true,
+        "show_warnings": true,
+        "window_size": {
+            "width": 1000,
+            "height": 700
+        }
+    }
+}

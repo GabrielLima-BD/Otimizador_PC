@@ -1,0 +1,63 @@
+{
+    "gaming_config": {
+        "version": "2.0",
+        "auto_optimization": true,
+        "game_detection": {
+            "enabled": true,
+            "scan_on_startup": true,
+            "cache_enabled": true,
+            "cache_duration_hours": 24,
+            "supported_launchers": [
+                "steam",
+                "epic_games", 
+                "registry",
+                "manual"
+            ]
+        },
+        "autostart": {
+            "enabled": false,
+            "method": "registry",
+            "run_optimization_on_boot": true,
+            "delay_seconds": 30
+        },
+        "boot_optimization": {
+            "enabled": true,
+            "modules": [
+                "memory_cleanup",
+                "process_priority",
+                "system_cache"
+            ],
+            "create_task": true,
+            "task_name": "Windows10ProOptimizer"
+        },
+        "gaming_mode": {
+            "auto_enable": true,
+            "optimization_level": "high",
+            "monitor_performance": true,
+            "close_unnecessary_apps": true,
+            "disable_windows_game_mode": false
+        },
+        "ui_settings": {
+            "theme": "dark",
+            "appearance_mode": "dark",
+            "color_theme": "blue",
+            "window_size": "1200x800",
+            "auto_refresh": true,
+            "refresh_interval": 5
+        },
+        "logging": {
+            "enabled": true,
+            "level": "INFO",
+            "file_path": "logs/gaming_optimizer.log",
+            "max_size_mb": 10,
+            "backup_count": 5
+        },
+        "performance": {
+            "cpu_priority": "high",
+            "io_priority": "high", 
+            "memory_priority": "high",
+            "disable_fullscreen_optimization": true,
+            "disable_game_bar": false
+        }
+    }
+}
