@@ -12,13 +12,14 @@ class PerformanceOptimizer:
         self.optimizations_applied = []
         
         # Serviços que podem ser desabilitados para melhor desempenho
+        # ⚠️ LISTA SEGURA DE SERVIÇOS - ÁUDIO/MICROFONE PROTEGIDOS ⚠️
         self.services_to_disable = [
             'WSearch',  # Windows Search
             'SysMain',  # Superfetch/Prefetch
             'Themes',   # Temas (se não usar)
             'TabletInputService',  # Serviço de entrada de tablet
             'WbioSrvc',  # Serviço de biometria
-            'WMPNetworkSvc',  # Compartilhamento de rede do Windows Media Player
+            # 'WMPNetworkSvc' REMOVIDO - pode afetar áudio
             'WerSvc',   # Relatório de erros do Windows
             'DiagTrack',  # Telemetria
             'RetailDemo',  # Serviço de demonstração
@@ -26,6 +27,16 @@ class PerformanceOptimizer:
             'SharedAccess',  # Compartilhamento de conexão de internet
             'TrkWks',   # Cliente de rastreamento de link distribuído
             'WpcMonSvc',  # Controle dos pais
+        ]
+        
+        # 🎤 SERVIÇOS PROTEGIDOS - NUNCA DESABILITAR (ÁUDIO/MICROFONE)
+        self.protected_audio_services = [
+            'AudioSrv',           # Windows Audio
+            'Audiosrv',           # Windows Audio (alternativo)
+            'AudioEndpointBuilder',  # Windows Audio Endpoint Builder
+            'RpcEptMapper',       # RPC Endpoint Mapper (necessário para áudio)
+            'DcomLaunch',         # DCOM Server Process Launcher (necessário para áudio)
+            'RpcSs',              # Remote Procedure Call (RPC) (necessário para áudio)
         ]
     
     def optimize_power_settings(self, progress_callback=None):
@@ -62,7 +73,7 @@ class PerformanceOptimizer:
             return False
     
     def disable_unnecessary_services(self, progress_callback=None):
-        """Desabilita serviços desnecessários"""
+        """🔒 Desabilita serviços desnecessários - PROTEÇÃO DE ÁUDIO ATIVA"""
         if progress_callback:
             progress_callback("Desabilitando serviços desnecessários...", 0)
         
@@ -72,6 +83,11 @@ class PerformanceOptimizer:
         for i, service in enumerate(self.services_to_disable):
             if progress_callback:
                 progress_callback(f"Verificando serviço: {service}", (i / total_services) * 100)
+            
+            # 🎤 PROTEÇÃO DE ÁUDIO - Verificar se não é serviço de áudio
+            if service.lower() in [s.lower() for s in self.protected_audio_services]:
+                self.logger.info(f"🔒 SERVIÇO DE ÁUDIO PROTEGIDO: {service} - NÃO DESABILITADO")
+                continue
             
             success = self._disable_service(service)
             if success:

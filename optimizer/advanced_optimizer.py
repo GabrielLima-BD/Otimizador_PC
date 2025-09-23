@@ -419,13 +419,19 @@ class AdvancedOptimizer:
         if progress_callback:
             progress_callback("Desativando serviços de sistema desnecessários...", 0)
         
+        # 🎤 SERVIÇOS PROTEGIDOS - NUNCA DESABILITAR (ÁUDIO/MICROFONE)
+        protected_audio_services = [
+            'AudioSrv', 'Audiosrv', 'AudioEndpointBuilder', 'RpcEptMapper', 
+            'DcomLaunch', 'RpcSs', 'MMCSS', 'WavesSysSvc'
+        ]
+        
         services_to_disable = [
             'BDESVC',           # BitLocker Drive Encryption Service
             'WerSvc',           # Windows Error Reporting Service
             'RemoteAccess',     # Routing and Remote Access
             'RemoteRegistry',   # Remote Registry
             'TermService',      # Remote Desktop Services
-            'WMPNetworkSvc',    # Windows Media Player Network Sharing Service
+            # 'WMPNetworkSvc' REMOVIDO - pode afetar áudio
             'TabletInputService', # Touch Keyboard and Handwriting Panel Service
             'StorSvc',          # Storage Service
             'lfsvc',            # Geolocation Service
@@ -442,7 +448,12 @@ class AdvancedOptimizer:
         for i, service in enumerate(services_to_disable):
             if progress_callback:
                 progress = (i / len(services_to_disable)) * 100
-                progress_callback(f"Desativando serviço: {service}", progress)
+                progress_callback(f"Verificando serviço: {service}", progress)
+            
+            # 🎤 PROTEÇÃO DE ÁUDIO - Verificar se não é serviço de áudio
+            if service.lower() in [s.lower() for s in protected_audio_services]:
+                self.logger.info(f"🔒 SERVIÇO DE ÁUDIO PROTEGIDO: {service} - NÃO DESABILITADO")
+                continue
             
             try:
                 # Parar o serviço
@@ -857,10 +868,16 @@ class AdvancedOptimizer:
         if progress_callback:
             progress_callback("Aplicando otimizações ultra avançadas de rede...", 0)
         
+        # 🎤 SERVIÇOS PROTEGIDOS - NUNCA DESABILITAR (ÁUDIO/MICROFONE)
+        protected_audio_services = [
+            'AudioSrv', 'Audiosrv', 'AudioEndpointBuilder', 'RpcEptMapper', 
+            'DcomLaunch', 'RpcSs', 'MMCSS', 'WavesSysSvc'
+        ]
+        
         ultra_network_services = [
             'NetSetupSvc',      # Network Setup Service
             'WinRM',            # Windows Remote Management
-            'RpcLocator',       # Remote Procedure Call (RPC) Locator
+            # 'RpcLocator' REMOVIDO - pode afetar áudio através de RPC
             'PNRPsvc',          # Peer Name Resolution Protocol
             'p2psvc',           # Peer-to-Peer Grouping
             'p2pimsvc',         # Peer-to-Peer Identity Manager
@@ -904,7 +921,12 @@ class AdvancedOptimizer:
         for i, service in enumerate(ultra_network_services):
             if progress_callback:
                 progress = (i / (len(ultra_network_services) + len(ultra_network_registry))) * 50
-                progress_callback(f"Desativando serviço ultra de rede: {service}", progress)
+                progress_callback(f"Verificando serviço ultra de rede: {service}", progress)
+            
+            # 🎤 PROTEÇÃO DE ÁUDIO - Verificar se não é serviço de áudio
+            if service.lower() in [s.lower() for s in protected_audio_services]:
+                self.logger.info(f"🔒 SERVIÇO DE ÁUDIO PROTEGIDO: {service} - NÃO DESABILITADO")
+                continue
             
             try:
                 subprocess.run(['sc', 'stop', service], 
@@ -938,6 +960,12 @@ class AdvancedOptimizer:
         """🛠 Extras Avançados - Desativa recursos avançados desnecessários"""
         if progress_callback:
             progress_callback("Desativando recursos extras avançados...", 0)
+        
+        # 🎤 SERVIÇOS PROTEGIDOS - NUNCA DESABILITAR (ÁUDIO/MICROFONE)
+        protected_audio_services = [
+            'AudioSrv', 'Audiosrv', 'AudioEndpointBuilder', 'RpcEptMapper', 
+            'DcomLaunch', 'RpcSs', 'MMCSS', 'WavesSysSvc'
+        ]
         
         extras_services = [
             'vmickvpexchange',   # Hyper-V Data Exchange Service
@@ -988,7 +1016,12 @@ class AdvancedOptimizer:
         for i, service in enumerate(extras_services):
             if progress_callback:
                 progress = (i / (len(extras_services) + len(extras_registry))) * 50
-                progress_callback(f"Desativando serviço extra: {service}", progress)
+                progress_callback(f"Verificando serviço extra: {service}", progress)
+            
+            # 🎤 PROTEÇÃO DE ÁUDIO - Verificar se não é serviço de áudio
+            if service.lower() in [s.lower() for s in protected_audio_services]:
+                self.logger.info(f"🔒 SERVIÇO DE ÁUDIO PROTEGIDO: {service} - NÃO DESABILITADO")
+                continue
             
             try:
                 subprocess.run(['sc', 'stop', service], 

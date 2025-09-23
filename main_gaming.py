@@ -31,7 +31,7 @@ class AdvancedMainWindow(ctk.CTk):
         super().__init__()
         
         # Configurar janela
-        self.title("🎮 Otimizador PC Gaming ULTRA - Versão Completa")
+        self.title("🎮 Otimizador PC Gaming ULTRA - 🎤 MICROFONE PROTEGIDO")
         self.geometry("1200x800")
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -100,18 +100,6 @@ class AdvancedMainWindow(ctk.CTk):
             font=("Arial", 12, "bold")
         )
         self.scan_all_btn.grid(row=0, column=2, padx=10, pady=10)
-        
-        # Botão Modos Especiais
-        self.special_modes_btn = ctk.CTkButton(
-            search_frame,
-            text="🚀 MODOS ESPECIAIS",
-            command=self.open_special_modes,
-            height=35,
-            font=("Arial", 12, "bold"),
-            fg_color="#ff6b35",
-            hover_color="#e55a2b"
-        )
-        self.special_modes_btn.grid(row=0, column=3, padx=10, pady=10)
         
         # Status da busca
         self.search_status = ctk.CTkLabel(search_frame, text="⚡ Digite para buscar ou clique em 'Buscar Todos'")
@@ -305,6 +293,103 @@ class AdvancedMainWindow(ctk.CTk):
             hover_color="#b91c1c"
         )
         self.ultra_advanced_optimize_btn.pack(pady=(0, 20), padx=20, fill="x")
+        
+        # === MODOS ESPECIAIS COMBINADOS ===
+        special_modes_label = ctk.CTkLabel(advanced_frame, text="🎯 MODOS ESPECIAIS DE OTIMIZAÇÃO", 
+                                         font=("Arial", 14, "bold"), text_color="#00ff00")
+        special_modes_label.pack(pady=(20, 10))
+        
+        # Frame para os modos especiais
+        special_modes_frame = ctk.CTkFrame(advanced_frame)
+        special_modes_frame.pack(pady=5, padx=20, fill="x")
+        
+        # MODO 1: TURBO GAMING (Turbo + Gaming)
+        turbo_frame = ctk.CTkFrame(special_modes_frame)
+        turbo_frame.pack(pady=10, padx=15, fill="x")
+        
+        turbo_btn = ctk.CTkButton(
+            turbo_frame,
+            text="🚀 MODO TURBO GAMING",
+            command=self.activate_turbo_gaming_mode,
+            height=40,
+            width=200,
+            font=("Arial", 12, "bold"),
+            fg_color="#ff4500",
+            hover_color="#e03e00"
+        )
+        turbo_btn.pack(side="left", padx=10, pady=10)
+        
+        turbo_desc = ctk.CTkLabel(
+            turbo_frame,
+            text="🎮 ATIVA: Performance máxima, prioridade para jogos, limpeza RAM\n" +
+                 "❌ DESATIVA: Serviços desnecessários, efeitos visuais, indexação\n" +
+                 "⚡ IDEAL: Jogos competitivos e máxima performance",
+            font=("Arial", 10),
+            justify="left"
+        )
+        turbo_desc.pack(side="left", padx=10, fill="x", expand=True)
+        
+        # MODO 2: BENCHMARK COMPLETO (Benchmark + Deep Clean)
+        benchmark_frame = ctk.CTkFrame(special_modes_frame)
+        benchmark_frame.pack(pady=10, padx=15, fill="x")
+        
+        benchmark_btn = ctk.CTkButton(
+            benchmark_frame,
+            text="📊 MODO BENCHMARK COMPLETO",
+            command=self.activate_benchmark_complete_mode,
+            height=40,
+            width=200,
+            font=("Arial", 12, "bold"),
+            fg_color="#0066cc",
+            hover_color="#0052a3"
+        )
+        benchmark_btn.pack(side="left", padx=10, pady=10)
+        
+        benchmark_desc = ctk.CTkLabel(
+            benchmark_frame,
+            text="📈 ATIVA: Todas otimizações + relatórios detalhados, limpeza profunda\n" +
+                 "🧹 DESATIVA: Arquivos temporários, cache, logs, registry órfão\n" +
+                 "📊 IDEAL: Testes de performance e limpeza completa",
+            font=("Arial", 10),
+            justify="left"
+        )
+        benchmark_desc.pack(side="left", padx=10, fill="x", expand=True)
+        
+        # MODO 3: EXTREMO TOTAL (Extremo + Silencioso)
+        extreme_frame = ctk.CTkFrame(special_modes_frame)
+        extreme_frame.pack(pady=10, padx=15, fill="x")
+        
+        extreme_btn = ctk.CTkButton(
+            extreme_frame,
+            text="⚡ MODO EXTREMO TOTAL",
+            command=self.activate_extreme_total_mode,
+            height=40,
+            width=200,
+            font=("Arial", 12, "bold"),
+            fg_color="#cc0000",
+            hover_color="#a30000"
+        )
+        extreme_btn.pack(side="left", padx=10, pady=10)
+        
+        extreme_desc = ctk.CTkLabel(
+            extreme_frame,
+            text="⚠️ ATIVA: TODAS configurações extremas de CPU/GPU/RAM/Rede\n" +
+                 "🔇 DESATIVA: Telemetria, recursos visuais, funcionalidades desnecessárias\n" +
+                 "🚨 IDEAL: Máxima performance (requer experiência)",
+            font=("Arial", 10),
+            justify="left",
+            text_color="#ffaa00"
+        )
+        extreme_desc.pack(side="left", padx=10, fill="x", expand=True)
+        
+        # Aviso de proteção de áudio
+        audio_protection_label = ctk.CTkLabel(
+            special_modes_frame,
+            text="🎤 PROTEÇÃO DE ÁUDIO ATIVA: Microfone e som sempre protegidos em todos os modos",
+            font=("Arial", 10, "bold"),
+            text_color="#00ff00"
+        )
+        audio_protection_label.pack(pady=10)
         
         # Log de otimização
         log_label = ctk.CTkLabel(advanced_frame, text="📋 Log de Atividades", font=("Arial", 12, "bold"))
@@ -1241,6 +1326,156 @@ class AdvancedMainWindow(ctk.CTk):
                 f"Erro ao abrir Modos Especiais:\n{e}\n\n"
                 "Verifique se todos os módulos estão instalados corretamente."
             )
+    
+    # === MODOS ESPECIAIS COMBINADOS ===
+    
+    def activate_turbo_gaming_mode(self):
+        """🚀 MODO TURBO GAMING - Combina Turbo + Gaming Preparation"""
+        if not messagebox.askyesno("MODO TURBO GAMING", 
+                                   "🚀 MODO TURBO GAMING\n\n" +
+                                   "✅ ATIVARÁ:\n" +
+                                   "• Performance máxima de CPU/GPU\n" +
+                                   "• Prioridade alta para jogos\n" +
+                                   "• Limpeza automática de RAM\n" +
+                                   "• Configurações de rede otimizadas\n\n" +
+                                   "❌ DESATIVARÁ:\n" +
+                                   "• Serviços desnecessários\n" +
+                                   "• Efeitos visuais\n" +
+                                   "• Indexação e busca\n" +
+                                   "• Processos em background\n\n" +
+                                   "🎤 ÁUDIO: Totalmente protegido!\n\n" +
+                                   "Continuar?"):
+            return
+        
+        def turbo_worker():
+            try:
+                self.after(0, lambda: self.log_optimization("🚀 INICIANDO MODO TURBO GAMING..."))
+                
+                # Inicializar special modes
+                from optimizer.special_modes import SpecialModes
+                special_modes = SpecialModes(self.advanced_optimizer)
+                
+                # Aplicar modo turbo
+                self.after(0, lambda: self.log_optimization("⚡ Aplicando modo Turbo..."))
+                turbo_result = special_modes.activate_turbo_mode()
+                
+                # Preparar sistema para gaming
+                self.after(0, lambda: self.log_optimization("🎮 Preparando sistema para jogos..."))
+                special_modes._prepare_system_for_gaming()
+                special_modes._optimize_cpu_priorities()
+                
+                self.after(0, lambda: self.log_optimization("✅ MODO TURBO GAMING ATIVADO!"))
+                self.after(0, lambda: messagebox.showinfo("Sucesso", 
+                          f"🚀 MODO TURBO GAMING ATIVADO!\n\n" +
+                          f"📊 Otimizações aplicadas: {len(turbo_result.get('optimizations', []))}\n" +
+                          f"🎯 Sistema otimizado para máxima performance em jogos!"))
+                
+            except Exception as e:
+                self.after(0, lambda: self.log_optimization(f"❌ Erro no Modo Turbo Gaming: {e}"))
+                self.after(0, lambda: messagebox.showerror("Erro", f"Erro no Modo Turbo Gaming: {e}"))
+        
+        threading.Thread(target=turbo_worker, daemon=True).start()
+    
+    def activate_benchmark_complete_mode(self):
+        """📊 MODO BENCHMARK COMPLETO - Combina Benchmark + Deep Clean"""
+        if not messagebox.askyesno("MODO BENCHMARK COMPLETO", 
+                                   "📊 MODO BENCHMARK COMPLETO\n\n" +
+                                   "✅ ATIVARÁ:\n" +
+                                   "• TODAS as otimizações do sistema\n" +
+                                   "• Relatórios detalhados de performance\n" +
+                                   "• Limpeza profunda completa\n" +
+                                   "• Coleta de métricas antes/depois\n\n" +
+                                   "🧹 LIMPARÁ:\n" +
+                                   "• Arquivos temporários (GB)\n" +
+                                   "• Cache de aplicativos\n" +
+                                   "• Logs do sistema\n" +
+                                   "• Entradas órfãs do registro\n\n" +
+                                   "📈 RESULTADO: Relatório completo\n\n" +
+                                   "Continuar?"):
+            return
+        
+        def benchmark_worker():
+            try:
+                self.after(0, lambda: self.log_optimization("📊 INICIANDO MODO BENCHMARK COMPLETO..."))
+                
+                from optimizer.special_modes import SpecialModes
+                special_modes = SpecialModes(self.advanced_optimizer)
+                
+                # Aplicar benchmark mode
+                self.after(0, lambda: self.log_optimization("📈 Executando benchmark completo..."))
+                benchmark_result = special_modes.activate_benchmark_mode()
+                
+                # Aplicar deep clean
+                self.after(0, lambda: self.log_optimization("🧹 Executando limpeza profunda..."))
+                clean_result = special_modes.activate_deep_clean_mode()
+                
+                total_space = clean_result.get('total_space_freed', 0)
+                
+                self.after(0, lambda: self.log_optimization("✅ MODO BENCHMARK COMPLETO CONCLUÍDO!"))
+                self.after(0, lambda: messagebox.showinfo("Sucesso", 
+                          f"📊 MODO BENCHMARK COMPLETO CONCLUÍDO!\n\n" +
+                          f"🧹 Espaço liberado: {total_space} MB\n" +
+                          f"📈 Relatório salvo em: logs/reports/\n" +
+                          f"🎯 Sistema completamente otimizado e limpo!"))
+                
+            except Exception as e:
+                self.after(0, lambda: self.log_optimization(f"❌ Erro no Modo Benchmark: {e}"))
+                self.after(0, lambda: messagebox.showerror("Erro", f"Erro no Modo Benchmark: {e}"))
+        
+        threading.Thread(target=benchmark_worker, daemon=True).start()
+    
+    def activate_extreme_total_mode(self):
+        """⚡ MODO EXTREMO TOTAL - Combina Extremo + Silencioso"""
+        if not messagebox.askyesno("⚠️ MODO EXTREMO TOTAL", 
+                                   "⚠️ MODO EXTREMO TOTAL\n\n" +
+                                   "🚨 ATENÇÃO: MODO MAIS AGRESSIVO!\n\n" +
+                                   "⚡ ATIVARÁ:\n" +
+                                   "• TODAS configurações extremas\n" +
+                                   "• CPU: Prioridades máximas\n" +
+                                   "• GPU: Performance extrema\n" +
+                                   "• RAM: Otimizações agressivas\n" +
+                                   "• REDE: Configurações extremas\n\n" +
+                                   "🔇 DESATIVARÁ:\n" +
+                                   "• Telemetria e rastreamento\n" +
+                                   "• Recursos visuais\n" +
+                                   "• Funcionalidades desnecessárias\n" +
+                                   "• Serviços opcionais\n\n" +
+                                   "🎤 ÁUDIO: Sempre protegido!\n" +
+                                   "⚠️ Recomendado para usuários experientes\n\n" +
+                                   "Continuar?"):
+            return
+        
+        def extreme_worker():
+            try:
+                self.after(0, lambda: self.log_optimization("⚡ INICIANDO MODO EXTREMO TOTAL..."))
+                
+                from optimizer.special_modes import SpecialModes
+                special_modes = SpecialModes(self.advanced_optimizer)
+                
+                # Aplicar modo extremo
+                self.after(0, lambda: self.log_optimization("🚨 Aplicando configurações EXTREMAS..."))
+                extreme_result = special_modes.activate_extreme_performance_mode()
+                
+                # Aplicar otimizações silenciosas adicionais
+                self.after(0, lambda: self.log_optimization("🔇 Aplicando otimizações silenciosas..."))
+                special_modes._silent_network_optimization()
+                special_modes._apply_extreme_cpu_settings()
+                special_modes._apply_extreme_gpu_settings()
+                special_modes._apply_extreme_memory_settings()
+                
+                self.after(0, lambda: self.log_optimization("✅ MODO EXTREMO TOTAL ATIVADO!"))
+                self.after(0, lambda: messagebox.showinfo("Sucesso", 
+                          f"⚡ MODO EXTREMO TOTAL ATIVADO!\n\n" +
+                          f"🚨 MÁXIMA PERFORMANCE ALCANÇADA!\n" +
+                          f"📊 Otimizações: {len(extreme_result.get('optimizations', []))}\n" +
+                          f"⚠️ Monitore a estabilidade do sistema\n" +
+                          f"🎤 Áudio completamente protegido!"))
+                
+            except Exception as e:
+                self.after(0, lambda: self.log_optimization(f"❌ Erro no Modo Extremo: {e}"))
+                self.after(0, lambda: messagebox.showerror("Erro", f"Erro no Modo Extremo: {e}"))
+        
+        threading.Thread(target=extreme_worker, daemon=True).start()
 
 
 def main():

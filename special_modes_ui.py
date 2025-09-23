@@ -57,7 +57,16 @@ class SpecialModesWindow(ctk.CTkToplevel):
             text="Performance Extrema | Limpeza Profunda | Monitoramento Avançado",
             font=ctk.CTkFont(size=14)
         )
-        subtitle_label.pack(pady=(0, 10))
+        subtitle_label.pack(pady=(0, 5))
+        
+        # 🎤 AVISO DE PROTEÇÃO DE ÁUDIO
+        audio_protection_label = ctk.CTkLabel(
+            header_frame,
+            text="🎤 PROTEÇÃO ATIVA: Serviços de áudio/microfone estão protegidos e nunca serão desabilitados",
+            font=ctk.CTkFont(size=12, weight="bold"),
+            text_color="#00ff00"
+        )
+        audio_protection_label.pack(pady=(0, 10))
         
         # Container principal com abas
         self.tabview = ctk.CTkTabview(self)
@@ -578,8 +587,11 @@ class SpecialModesWindow(ctk.CTkToplevel):
             self.progress_queue.put(("progress", progress, message))
         
         try:
-            result = self.special_modes.activate_turbo_mode(progress_callback)
-            self.progress_queue.put(("complete", result))
+            if self.special_modes:
+                result = self.special_modes.activate_turbo_mode(progress_callback)
+                self.progress_queue.put(("complete", result))
+            else:
+                self.progress_queue.put(("error", "Sistema de modos especiais não disponível"))
         except Exception as e:
             self.progress_queue.put(("error", str(e)))
     
@@ -607,8 +619,11 @@ class SpecialModesWindow(ctk.CTkToplevel):
             self.progress_queue.put(("progress", progress, message))
         
         try:
-            result = self.special_modes.deactivate_turbo_mode(progress_callback)
-            self.progress_queue.put(("complete", result))
+            if self.special_modes:
+                result = self.special_modes.deactivate_turbo_mode(progress_callback)
+                self.progress_queue.put(("complete", result))
+            else:
+                self.progress_queue.put(("error", "Sistema de modos especiais não disponível"))
         except Exception as e:
             self.progress_queue.put(("error", str(e)))
     
@@ -629,8 +644,11 @@ class SpecialModesWindow(ctk.CTkToplevel):
             self.progress_queue.put(("progress", progress, message))
         
         try:
-            result = self.special_modes.activate_silent_mode(progress_callback)
-            self.progress_queue.put(("complete", result))
+            if self.special_modes:
+                result = self.special_modes.activate_silent_mode(progress_callback)
+                self.progress_queue.put(("complete", result))
+            else:
+                self.progress_queue.put(("error", "Sistema de modos especiais não disponível"))
         except Exception as e:
             self.progress_queue.put(("error", str(e)))
     
@@ -663,8 +681,11 @@ class SpecialModesWindow(ctk.CTkToplevel):
             self.progress_queue.put(("progress", progress, message))
         
         try:
-            result = self.special_modes.activate_benchmark_mode(progress_callback)
-            self.progress_queue.put(("complete", result))
+            if self.special_modes:
+                result = self.special_modes.activate_benchmark_mode(progress_callback)
+                self.progress_queue.put(("complete", result))
+            else:
+                self.progress_queue.put(("error", "Sistema de modos especiais não disponível"))
         except Exception as e:
             self.progress_queue.put(("error", str(e)))
     
@@ -685,8 +706,11 @@ class SpecialModesWindow(ctk.CTkToplevel):
             self.progress_queue.put(("progress", progress, message))
         
         try:
-            result = self.special_modes.activate_deep_clean_mode(progress_callback)
-            self.progress_queue.put(("complete", result))
+            if self.special_modes:
+                result = self.special_modes.activate_deep_clean_mode(progress_callback)
+                self.progress_queue.put(("complete", result))
+            else:
+                self.progress_queue.put(("error", "Sistema de modos especiais não disponível"))
         except Exception as e:
             self.progress_queue.put(("error", str(e)))
     
@@ -740,8 +764,11 @@ class SpecialModesWindow(ctk.CTkToplevel):
             self.progress_queue.put(("progress", progress, message))
         
         try:
-            result = self.special_modes.activate_extreme_performance_mode(progress_callback)
-            self.progress_queue.put(("complete", result))
+            if self.special_modes:
+                result = self.special_modes.activate_extreme_performance_mode(progress_callback)
+                self.progress_queue.put(("complete", result))
+            else:
+                self.progress_queue.put(("error", "Sistema de modos especiais não disponível"))
         except Exception as e:
             self.progress_queue.put(("error", str(e)))
     
@@ -880,7 +907,7 @@ class SpecialModesWindow(ctk.CTkToplevel):
             title="Salvar Dados de Monitoramento",
             defaultextension=".json",
             filetypes=[("JSON files", "*.json"), ("Todos os arquivos", "*.*")],
-            initialname=f"monitoring_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            initialfile=f"monitoring_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         )
         
         if filename:
@@ -945,7 +972,7 @@ class SpecialModesWindow(ctk.CTkToplevel):
                 title="Salvar Relatório de Performance",
                 defaultextension=".txt",
                 filetypes=[("Arquivos de texto", "*.txt"), ("Todos os arquivos", "*.*")],
-                initialname=f"relatorio_performance_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                initialfile=f"relatorio_performance_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
             )
             
             if filename:
