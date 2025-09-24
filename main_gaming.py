@@ -418,6 +418,62 @@ class AdvancedMainWindow(ctk.CTk):
         )
         audio_protection_label.pack(pady=10)
         
+        # 🎮 FRAME PARA FUNCIONALIDADES EXTRAS
+        extra_features_frame = ctk.CTkFrame(special_modes_frame)
+        extra_features_frame.pack(pady=10, padx=15, fill="x")
+        
+        # Label para extras
+        extra_label = ctk.CTkLabel(
+            extra_features_frame,
+            text="🎯 FUNCIONALIDADES EXTRAS",
+            font=("Arial", 14, "bold"),
+            text_color="#00aaff"
+        )
+        extra_label.pack(pady=5)
+        
+        # Frame para botões extras
+        extra_buttons_frame = ctk.CTkFrame(extra_features_frame)
+        extra_buttons_frame.pack(pady=5, padx=10, fill="x")
+        
+        # Botão Detectar Jogos
+        detect_games_btn = ctk.CTkButton(
+            extra_buttons_frame,
+            text="🎮 Detectar Jogos",
+            command=self.detect_and_optimize_games,
+            height=35,
+            width=150,
+            font=("Arial", 11, "bold"),
+            fg_color="#00aa00",
+            hover_color="#008800"
+        )
+        detect_games_btn.pack(side="left", padx=5, pady=5)
+        
+        # Botão Limpar Cache GPU
+        clear_cache_btn = ctk.CTkButton(
+            extra_buttons_frame,
+            text="🗑️ Cache GPU",
+            command=self.clear_gpu_cache,
+            height=35,
+            width=150,
+            font=("Arial", 11, "bold"),
+            fg_color="#ff8800",
+            hover_color="#cc6600"
+        )
+        clear_cache_btn.pack(side="left", padx=5, pady=5)
+        
+        # Botão Processos
+        processes_btn = ctk.CTkButton(
+            extra_buttons_frame,
+            text="🚀 Processos",
+            command=self.manage_process_priorities,
+            height=35,
+            width=150,
+            font=("Arial", 11, "bold"),
+            fg_color="#8800aa",
+            hover_color="#660088"
+        )
+        processes_btn.pack(side="left", padx=5, pady=5)
+        
         # Log de otimização
         log_label = ctk.CTkLabel(advanced_frame, text="📋 Log de Atividades", font=("Arial", 12, "bold"))
         log_label.pack(pady=(20, 5))
@@ -1599,6 +1655,108 @@ class AdvancedMainWindow(ctk.CTk):
                 self.after(0, lambda: messagebox.showerror("Erro", f"Erro crítico no AMD Beast Mode: {e}"))
         
         threading.Thread(target=amd_beast_worker, daemon=True).start()
+    
+    def detect_and_optimize_games(self):
+        """🎮 Detectar e otimizar jogos instalados"""
+        self.log_optimization("🎮 Iniciando detecção de jogos...")
+        
+        def detect_worker():
+            try:
+                def progress_callback(message, progress):
+                    self.after(0, lambda: self.log_optimization(f"  📝 {message}"))
+                
+                # Usar a nova funcionalidade do advanced_optimizer
+                if hasattr(self.advanced_optimizer, 'detect_and_optimize_games'):
+                    optimizations = self.advanced_optimizer.detect_and_optimize_games(progress_callback)
+                    
+                    for opt in optimizations:
+                        self.after(0, lambda o=opt: self.log_optimization(f"✅ {o}"))
+                    
+                    self.after(0, lambda: self.log_optimization("🎮 Detecção de jogos concluída!"))
+                    self.after(0, lambda: messagebox.showinfo("Sucesso", 
+                                            "🎮 DETECÇÃO DE JOGOS CONCLUÍDA!\n\n" +
+                                            f"📊 Otimizações aplicadas: {len(optimizations)}\n" +
+                                            "🎯 Jogos detectados e otimizados para máxima performance!"))
+                else:
+                    self.after(0, lambda: messagebox.showinfo("Info", "Funcionalidade de detecção de jogos não disponível"))
+                
+            except Exception as e:
+                error_msg = str(e)
+                self.after(0, lambda: self.log_optimization(f"❌ Erro na detecção: {error_msg}"))
+                self.after(0, lambda: messagebox.showerror("Erro", f"Erro na detecção de jogos: {error_msg}"))
+        
+        threading.Thread(target=detect_worker, daemon=True).start()
+    
+    def clear_gpu_cache(self):
+        """🗑️ Limpar cache da GPU e DirectX"""
+        self.log_optimization("🗑️ Iniciando limpeza de cache GPU...")
+        
+        def clear_worker():
+            try:
+                def progress_callback(message, progress):
+                    self.after(0, lambda: self.log_optimization(f"  📝 {message}"))
+                
+                # Usar a nova funcionalidade do advanced_optimizer
+                if hasattr(self.advanced_optimizer, 'clear_gpu_cache'):
+                    optimizations = self.advanced_optimizer.clear_gpu_cache(progress_callback)
+                    
+                    for opt in optimizations:
+                        self.after(0, lambda o=opt: self.log_optimization(f"✅ {o}"))
+                    
+                    self.after(0, lambda: self.log_optimization("🗑️ Limpeza de cache GPU concluída!"))
+                    self.after(0, lambda: messagebox.showinfo("Sucesso", 
+                                            "🗑️ CACHE GPU LIMPO!\n\n" +
+                                            f"📊 Operações realizadas: {len(optimizations)}\n" +
+                                            "🎯 Cache DirectX e GPU completamente limpos!"))
+                else:
+                    # Fallback para limpeza básica
+                    self.advanced_cleaner.clean_browser_profiles_deep()
+                    self.after(0, lambda: self.log_optimization("✅ Limpeza básica de cache executada"))
+                    self.after(0, lambda: messagebox.showinfo("Sucesso", "🗑️ Limpeza básica de cache executada!"))
+                
+            except Exception as e:
+                error_msg = str(e)
+                self.after(0, lambda: self.log_optimization(f"❌ Erro na limpeza: {error_msg}"))
+                self.after(0, lambda: messagebox.showerror("Erro", f"Erro na limpeza de cache: {error_msg}"))
+        
+        threading.Thread(target=clear_worker, daemon=True).start()
+    
+    def manage_process_priorities(self):
+        """🚀 Gerenciar prioridades de processos"""
+        self.log_optimization("🚀 Iniciando gerenciamento de processos...")
+        
+        def process_worker():
+            try:
+                # Usar funcionalidade do performance optimizer
+                from optimizer.performance import PerformanceOptimizer
+                perf_optimizer = PerformanceOptimizer()
+                
+                if hasattr(perf_optimizer, 'manage_process_priorities'):
+                    def progress_callback(message, progress):
+                        self.after(0, lambda: self.log_optimization(f"  📝 {message}"))
+                    
+                    optimizations = perf_optimizer.manage_process_priorities(progress_callback)
+                    
+                    for opt in optimizations:
+                        self.after(0, lambda o=opt: self.log_optimization(f"✅ {o}"))
+                    
+                    self.after(0, lambda: self.log_optimization("🚀 Gerenciamento de processos concluído!"))
+                    self.after(0, lambda: messagebox.showinfo("Sucesso", 
+                                            "🚀 PROCESSOS OTIMIZADOS!\n\n" +
+                                            f"📊 Operações realizadas: {len(optimizations)}\n" +
+                                            "🎯 Prioridades configuradas para máxima performance!"))
+                else:
+                    # Fallback para otimização básica
+                    self.advanced_optimizer.optimize_cpu_scheduling()
+                    self.after(0, lambda: self.log_optimization("✅ Otimização básica de CPU executada"))
+                    self.after(0, lambda: messagebox.showinfo("Sucesso", "🚀 CPU otimizada para melhor performance!"))
+                
+            except Exception as e:
+                error_msg = str(e)
+                self.after(0, lambda: self.log_optimization(f"❌ Erro no gerenciamento: {error_msg}"))
+                self.after(0, lambda: messagebox.showerror("Erro", f"Erro no gerenciamento de processos: {error_msg}"))
+        
+        threading.Thread(target=process_worker, daemon=True).start()
 
 
 def main():

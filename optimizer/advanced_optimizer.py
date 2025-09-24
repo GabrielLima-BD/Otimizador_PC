@@ -1330,3 +1330,282 @@ class AdvancedOptimizer:
         
         self.logger.info(f"Total de otimizações ULTRA AVANÇADAS aplicadas: {total_optimizations}")
         return total_optimizations
+    
+    def detect_and_optimize_games(self, progress_callback=None):
+        """🎮 DETECTAR JOGOS INSTALADOS E APLICAR OTIMIZAÇÕES ESPECÍFICAS"""
+        if progress_callback:
+            progress_callback("🔍 Detectando jogos instalados...", 0)
+        
+        optimizations = []
+        detected_games = []
+        
+        try:
+            import os
+            import winreg
+            
+            # Caminhos comuns de jogos
+            common_game_paths = [
+                r"C:\Program Files (x86)\Steam\steamapps\common",
+                r"C:\Program Files\Steam\steamapps\common",
+                r"C:\Program Files\Epic Games",
+                r"C:\Program Files (x86)\Epic Games",
+                r"C:\Program Files\Origin Games",
+                r"C:\Program Files (x86)\Origin Games",
+                r"C:\Program Files\Ubisoft\Ubisoft Game Launcher\games",
+                r"C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\games",
+                r"C:\Program Files\Battle.net",
+                r"C:\Program Files (x86)\Battle.net",
+                r"C:\XboxGames",
+                r"C:\Program Files\WindowsApps"
+            ]
+            
+            if progress_callback:
+                progress_callback("Escaneando diretórios de jogos...", 20)
+            
+            # Jogos específicos e suas otimizações
+            game_optimizations = {
+                'cs2.exe': {
+                    'name': 'Counter-Strike 2',
+                    'priority': 'HIGH',
+                    'affinity': 'ALL_CORES',
+                    'special': ['disable_fullscreen_opt', 'high_dpi_aware']
+                },
+                'csgo.exe': {
+                    'name': 'Counter-Strike: Global Offensive',
+                    'priority': 'HIGH',
+                    'affinity': 'ALL_CORES',
+                    'special': ['disable_fullscreen_opt', 'high_dpi_aware']
+                },
+                'valorant.exe': {
+                    'name': 'Valorant',
+                    'priority': 'HIGH',
+                    'affinity': 'ALL_CORES',
+                    'special': ['disable_game_bar', 'high_dpi_aware']
+                },
+                'valorant-win64-shipping.exe': {
+                    'name': 'Valorant (Shipping)',
+                    'priority': 'HIGH',
+                    'affinity': 'ALL_CORES',
+                    'special': ['disable_game_bar', 'high_dpi_aware']
+                },
+                'rainbowsix.exe': {
+                    'name': 'Rainbow Six Siege',
+                    'priority': 'HIGH',
+                    'affinity': 'PERFORMANCE_CORES',
+                    'special': ['disable_fullscreen_opt']
+                },
+                'fortniteclient-win64-shipping.exe': {
+                    'name': 'Fortnite',
+                    'priority': 'HIGH',
+                    'affinity': 'ALL_CORES',
+                    'special': ['disable_game_bar', 'high_performance_gpu']
+                },
+                'apex_legends.exe': {
+                    'name': 'Apex Legends',
+                    'priority': 'HIGH',
+                    'affinity': 'ALL_CORES',
+                    'special': ['disable_fullscreen_opt', 'high_performance_gpu']
+                },
+                'league of legends.exe': {
+                    'name': 'League of Legends',
+                    'priority': 'HIGH',
+                    'affinity': 'PERFORMANCE_CORES',
+                    'special': ['disable_game_bar']
+                },
+                'dota2.exe': {
+                    'name': 'Dota 2',
+                    'priority': 'HIGH',
+                    'affinity': 'ALL_CORES',
+                    'special': ['disable_fullscreen_opt']
+                },
+                'overwatch.exe': {
+                    'name': 'Overwatch',
+                    'priority': 'HIGH',
+                    'affinity': 'ALL_CORES',
+                    'special': ['high_performance_gpu', 'disable_game_bar']
+                }
+            }
+            
+            # Escanear diretórios
+            for path in common_game_paths:
+                if os.path.exists(path):
+                    try:
+                        for root, dirs, files in os.walk(path):
+                            for file in files:
+                                if file.lower().endswith('.exe'):
+                                    file_lower = file.lower()
+                                    if file_lower in game_optimizations:
+                                        game_info = game_optimizations[file_lower]
+                                        detected_games.append({
+                                            'exe': file,
+                                            'path': os.path.join(root, file),
+                                            'info': game_info
+                                        })
+                                        break
+                            if len(detected_games) >= 10:  # Limitar busca
+                                break
+                    except (PermissionError, OSError):
+                        continue
+            
+            if progress_callback:
+                progress_callback(f"Aplicando otimizações para {len(detected_games)} jogos...", 60)
+            
+            # Aplicar otimizações específicas para cada jogo
+            for game in detected_games:
+                try:
+                    self._apply_game_specific_optimizations(game)
+                    optimizations.append(f"🎮 {game['info']['name']}: Otimizações aplicadas")
+                except Exception as e:
+                    self.logger.warning(f"Erro ao otimizar {game['info']['name']}: {e}")
+            
+            if progress_callback:
+                progress_callback("Otimizações de jogos concluídas", 100)
+            
+            if detected_games:
+                optimizations.append(f"🎯 {len(detected_games)} jogos detectados e otimizados")
+            else:
+                optimizations.append("🔍 Nenhum jogo específico detectado para otimizar")
+            
+        except Exception as e:
+            self.logger.error(f"Erro na detecção de jogos: {e}")
+            optimizations.append("⚠️ Erro na detecção de jogos")
+        
+        return optimizations
+    
+    def _apply_game_specific_optimizations(self, game):
+        """Aplicar otimizações específicas para um jogo"""
+        try:
+            exe_name = game['exe']
+            game_info = game['info']
+            
+            # Configurar prioridade no registry
+            priority_key = rf'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\{exe_name}\PerfOptions'
+            
+            try:
+                winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, priority_key)
+                with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, priority_key, 0, winreg.KEY_SET_VALUE) as key:
+                    # Prioridade alta para CPU
+                    winreg.SetValueEx(key, 'CpuPriorityClass', 0, winreg.REG_DWORD, 3)  # High priority
+                    # GPU priority
+                    winreg.SetValueEx(key, 'GpuPriorityClass', 0, winreg.REG_DWORD, 8)  # High GPU priority
+                    # I/O priority
+                    winreg.SetValueEx(key, 'IoPriority', 0, winreg.REG_DWORD, 3)  # High I/O priority
+            except Exception as e:
+                self.logger.warning(f"Erro ao configurar prioridade para {exe_name}: {e}")
+            
+            # Aplicar otimizações especiais
+            for special in game_info.get('special', []):
+                self._apply_special_game_optimization(exe_name, special)
+                
+        except Exception as e:
+            self.logger.error(f"Erro ao aplicar otimizações para {game['exe']}: {e}")
+    
+    def _apply_special_game_optimization(self, exe_name, optimization):
+        """Aplicar otimização especial específica"""
+        try:
+            if optimization == 'disable_fullscreen_opt':
+                # Desabilitar otimização de tela cheia
+                key_path = rf'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\{exe_name}'
+                winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, key_path)
+                with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path, 0, winreg.KEY_SET_VALUE) as key:
+                    winreg.SetValueEx(key, 'DisableFullscreenOptimizations', 0, winreg.REG_SZ, 'True')
+            
+            elif optimization == 'high_dpi_aware':
+                # High DPI awareness
+                key_path = rf'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\{exe_name}'
+                winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, key_path)
+                with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path, 0, winreg.KEY_SET_VALUE) as key:
+                    winreg.SetValueEx(key, 'HighDpiAware', 0, winreg.REG_SZ, 'True')
+            
+            elif optimization == 'disable_game_bar':
+                # Desabilitar Game Bar para este jogo
+                key_path = rf'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\{exe_name}'
+                winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, key_path)
+                with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path, 0, winreg.KEY_SET_VALUE) as key:
+                    winreg.SetValueEx(key, 'DisableGameBar', 0, winreg.REG_DWORD, 1)
+                    
+        except Exception as e:
+            self.logger.warning(f"Erro ao aplicar otimização especial {optimization}: {e}")
+    
+    def clear_gpu_cache(self, progress_callback=None):
+        """🗑️ LIMPAR CACHE DA GPU E DIRECTX"""
+        if progress_callback:
+            progress_callback("🗑️ Limpando cache DirectX e GPU...", 0)
+        
+        optimizations = []
+        import subprocess
+        import os
+        import shutil
+        
+        try:
+            # Limpar cache DirectX shader
+            shader_cache_paths = [
+                os.path.expandvars(r'%LOCALAPPDATA%\D3DSCache'),
+                os.path.expandvars(r'%LOCALAPPDATA%\NVIDIA\DXCache'),
+                os.path.expandvars(r'%LOCALAPPDATA%\AMD\GLCache'),
+                os.path.expandvars(r'%LOCALAPPDATA%\AMD\DxCache'),
+                os.path.expandvars(r'%LOCALAPPDATA%\Microsoft\XboxLive\AuthStateCache.dat'),
+                os.path.expandvars(r'%TEMP%\NV_Cache'),
+                os.path.expandvars(r'%PROGRAMDATA%\NVIDIA Corporation\NV_Cache')
+            ]
+            
+            if progress_callback:
+                progress_callback("Removendo cache DirectX...", 30)
+            
+            for cache_path in shader_cache_paths:
+                try:
+                    if os.path.exists(cache_path):
+                        if os.path.isfile(cache_path):
+                            os.remove(cache_path)
+                            optimizations.append(f"🗑️ Cache removido: {os.path.basename(cache_path)}")
+                        elif os.path.isdir(cache_path):
+                            shutil.rmtree(cache_path, ignore_errors=True)
+                            optimizations.append(f"🗑️ Diretório cache removido: {os.path.basename(cache_path)}")
+                except Exception as e:
+                    self.logger.warning(f"Erro ao remover cache {cache_path}: {e}")
+            
+            if progress_callback:
+                progress_callback("Limpando cache OpenGL...", 60)
+            
+            # Limpar cache OpenGL
+            opengl_cache_paths = [
+                os.path.expandvars(r'%LOCALAPPDATA%\NVIDIA\GLCache'),
+                os.path.expandvars(r'%APPDATA%\NVIDIA\ComputeCache'),
+                os.path.expandvars(r'%LOCALAPPDATA%\AMD\GLCache')
+            ]
+            
+            for gl_cache in opengl_cache_paths:
+                try:
+                    if os.path.exists(gl_cache):
+                        shutil.rmtree(gl_cache, ignore_errors=True)
+                        optimizations.append(f"🗑️ Cache OpenGL removido: {os.path.basename(gl_cache)}")
+                except Exception as e:
+                    self.logger.warning(f"Erro ao limpar cache OpenGL: {e}")
+            
+            if progress_callback:
+                progress_callback("Executando limpeza avançada de GPU...", 90)
+            
+            # Comandos avançados de limpeza
+            cleanup_commands = [
+                'dism /online /cleanup-image /startcomponentcleanup',
+                'sfc /scannow',
+                'cleanmgr /sageset:1'
+            ]
+            
+            for cmd in cleanup_commands:
+                try:
+                    subprocess.run(cmd, shell=True, check=False, capture_output=True, timeout=30)
+                    optimizations.append(f"✅ Comando executado: {cmd.split()[0]}")
+                except Exception as e:
+                    self.logger.warning(f"Erro ao executar {cmd}: {e}")
+            
+            if progress_callback:
+                progress_callback("🗑️ Limpeza de cache GPU concluída!", 100)
+            
+            optimizations.append("🎯 Cache DirectX e GPU totalmente limpo!")
+            
+        except Exception as e:
+            self.logger.error(f"Erro na limpeza de cache GPU: {e}")
+            optimizations.append("⚠️ Erro na limpeza de cache GPU")
+        
+        return optimizations

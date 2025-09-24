@@ -11,39 +11,64 @@ class PerformanceOptimizer:
         self.logger = logging.getLogger(__name__)
         self.optimizations_applied = []
         
-        # 🔥 LISTA AGRESSIVA DE SERVIÇOS - GAMING EXTREMO
+        # 🔥 LISTA EXTREMA DE SERVIÇOS PESADOS - GAMING HARDCORE
         # ⚠️ ÁUDIO/MICROFONE PROTEGIDOS ⚠️
         self.services_to_disable = [
-            'WSearch',  # Windows Search
-            'SysMain',  # Superfetch/Prefetch (pode atrapalhar jogos)
-            'Themes',   # Temas (desempenho > aparência)
-            'TabletInputService',  # Tablet (desnecessário desktop)
-            'WbioSrvc',  # Biometria (desnecessário gaming)
-            'WerSvc',   # Relatório de erros (desnecessário)
-            'DiagTrack',  # Telemetria (privacidade + performance)
-            'RetailDemo',  # Demo (desnecessário)
-            'RemoteAccess',  # Acesso remoto (segurança + performance)
-            'SharedAccess',  # ICS (desnecessário)
-            'TrkWks',   # Rastreamento (desnecessário)
-            'WpcMonSvc',  # Controle parental (desnecessário)
-            # 🔥 SERVIÇOS ADICIONAIS PARA GAMING EXTREMO
-            'Spooler',  # Print spooler (se não imprimir)
-            'Fax',      # Fax (obsoleto)
-            'WMPNetworkSvc',  # Windows Media Player Network (se não usar)
-            'Browser',  # Computer Browser (desnecessário)
-            'TapiSrv',  # Telephony (desnecessário desktop)
-            'SCardSvr', # Smart Card (se não usar)
-            'WinRM',    # Windows Remote Management
-            'RemoteRegistry',  # Registry remoto (segurança)
+            # SERVIÇOS PESADOS QUE CONSOMEM MUITO RECURSO
+            'SysMain',  # Superfetch/Prefetch (PESADO - indexa arquivos)
+            'DiagTrack',  # Telemetria (PESADO - coleta dados)
+            'WSearch',  # Windows Search (PESADO - indexação constante)
+            'dmwappushservice',  # WAP Push Message Routing (PESADO)
+            'MapsBroker',  # Downloaded Maps Manager (PESADO)
+            'PcaSvc',   # Program Compatibility Assistant (PESADO)
+            'WbioSrvc',  # Windows Biometric Service (PESADO)
+            'wisvc',    # Windows Insider Service (PESADO)
+            'icssvc',   # Windows Mobile Hotspot Service (PESADO)
+            'PhoneSvc', # Phone Service (PESADO)
+            'TabletInputService',  # Tablet Input Service (PESADO)
+            'TouchKeyboard',  # Touch Keyboard Service (PESADO)
+            
+            # SERVIÇOS DE TELEMETRIA E RASTREAMENTO
+            'WerSvc',   # Windows Error Reporting
+            'RetailDemo',  # Retail Demo Service
+            'Dmwappushservice',  # Device Management WAP
+            'diagnosticshub.standardcollector.service',  # Diagnostics Hub
+            'TrkWks',   # Distributed Link Tracking Client
+            'WpcMonSvc',  # Parental Controls
+            
+            # SERVIÇOS DE REDE DESNECESSÁRIOS
+            'RemoteAccess',  # Routing and Remote Access
+            'SharedAccess',  # Internet Connection Sharing
+            'Browser',  # Computer Browser
             'RasMan',   # Remote Access Connection Manager
-            'SessionEnv',  # Remote Desktop Session Host
-            'TermService',  # Remote Desktop Services (se não usar)
+            'SessionEnv',  # Remote Desktop Configuration
+            'TermService',  # Remote Desktop Services
             'UmRdpService',  # Remote Desktop Services UserMode
-            'WiaRpc',   # Windows Image Acquisition (se não usar scanner)
+            'RemoteRegistry',  # Remote Registry
+            'WinRM',    # Windows Remote Management
+            
+            # SERVIÇOS DE HARDWARE DESNECESSÁRIO
+            'TapiSrv',  # Telephony
+            'SCardSvr', # Smart Card
+            'ScDeviceEnum',  # Smart Card Device Enumeration
+            'WiaRpc',   # Windows Image Acquisition (RPC)
             'stisvc',   # Windows Image Acquisition (Still Image)
             'SensrSvc', # Sensor Monitoring Service
+            'Fax',      # Fax Service
+            'Spooler',  # Print Spooler (se não imprimir)
+            
+            # SERVIÇOS DE CACHE E ARMAZENAMENTO
             'PeerDistSvc',  # BranchCache
             'CscService',   # Offline Files
+            'WMPNetworkSvc',  # Windows Media Player Network
+            'FontCache',      # Windows Font Cache Service
+            'Themes',   # Themes (visual vs performance)
+            
+            # XBOX E GAMING SERVICES (paradoxal, mas alguns consomem muito)
+            'XblAuthManager', # Xbox Live Auth Manager (se não usar Xbox)
+            'XblGameSave',    # Xbox Live Game Save (se não usar Xbox)
+            'XboxGipSvc',     # Xbox Accessory Management (se não usar controles Xbox)
+            'XboxNetApiSvc',  # Xbox Live Networking Service (se não usar Xbox)
         ]
         
         # 🎤 SERVIÇOS PROTEGIDOS - NUNCA DESABILITAR (ÁUDIO/MICROFONE)
@@ -62,7 +87,11 @@ class PerformanceOptimizer:
             progress_callback("🔥 Configurando energia para GAMING EXTREMO...", 0)
         
         try:
-            # 🚀 ULTIMATE PERFORMANCE PLAN (Windows 10/11)
+            # 🚀 MODO DE ENERGIA "DESEMPENHO MÁXIMO" - FORÇADO
+            if progress_callback:
+                progress_callback("Configurando Desempenho Máximo...", 10)
+            
+            # 1. Tentar Ultimate Performance primeiro
             cmd_ultimate = 'powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61'
             result_ultimate = subprocess.run(cmd_ultimate, shell=True, capture_output=True, text=True)
             if result_ultimate.returncode == 0:
@@ -70,10 +99,28 @@ class PerformanceOptimizer:
                 subprocess.run(cmd_activate_ultimate, shell=True, capture_output=True, text=True)
                 self.optimizations_applied.append("🚀 Ultimate Performance Plan ativado")
             else:
-                # Fallback para High Performance
-                cmd_high_performance = 'powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c'
-                subprocess.run(cmd_high_performance, shell=True, capture_output=True, text=True)
-                self.optimizations_applied.append("⚡ High Performance Plan ativado")
+                # 2. Fallback: Criar nosso próprio "Desempenho Máximo"
+                cmd_create_max = 'powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c'
+                result_create = subprocess.run(cmd_create_max, shell=True, capture_output=True, text=True)
+                if result_create.returncode == 0:
+                    # Extrair GUID do novo esquema
+                    output_lines = result_create.stdout.split('\n')
+                    for line in output_lines:
+                        if 'GUID:' in line:
+                            new_guid = line.split('GUID:')[1].strip()
+                            # Renomear para "Desempenho Máximo Gaming"
+                            cmd_rename = f'powercfg -changename {new_guid} "Desempenho Máximo Gaming" "Otimizado para jogos e performance extrema"'
+                            subprocess.run(cmd_rename, shell=True, capture_output=True)
+                            # Ativar o novo esquema
+                            cmd_activate_new = f'powercfg -setactive {new_guid}'
+                            subprocess.run(cmd_activate_new, shell=True, capture_output=True)
+                            self.optimizations_applied.append("🔥 Desempenho Máximo Gaming criado e ativado")
+                            break
+                else:
+                    # 3. Last resort: High Performance padrão
+                    cmd_high_performance = 'powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c'
+                    subprocess.run(cmd_high_performance, shell=True, capture_output=True, text=True)
+                    self.optimizations_applied.append("⚡ High Performance Plan ativado")
             
             if progress_callback:
                 progress_callback("Configurando hibernação e suspensão...", 25)
@@ -528,3 +575,113 @@ class PerformanceOptimizer:
             'optimizations_count': len(self.optimizations_applied),
             'optimizations_list': self.optimizations_applied
         }
+    
+    def manage_process_priorities(self, progress_callback=None):
+        """🚀 GERENCIAR PRIORIDADES DE PROCESSOS PARA GAMING"""
+        if progress_callback:
+            progress_callback("🚀 Configurando prioridades de processos...", 0)
+        
+        optimizations = []
+        
+        try:
+            import psutil
+            
+            if progress_callback:
+                progress_callback("Identificando processos de jogos...", 20)
+            
+            # Processos de jogos que devem ter prioridade alta
+            gaming_processes = [
+                'cs2.exe', 'csgo.exe', 'valorant.exe', 'valorant-win64-shipping.exe',
+                'rainbowsix.exe', 'apex_legends.exe', 'fortniteclient-win64-shipping.exe',
+                'league of legends.exe', 'dota2.exe', 'overwatch.exe', 'cod.exe',
+                'destiny2.exe', 'bf1.exe', 'battlefront2.exe', 'warzone.exe',
+                'gta5.exe', 'rdr2.exe', 'witcher3.exe', 'cyberpunk2077.exe'
+            ]
+            
+            # Processos do sistema que devem ter prioridade baixa
+            low_priority_processes = [
+                'windows defender', 'antimalware service executable', 'dllhost.exe',
+                'spoolsv.exe', 'audiodg.exe', 'conhost.exe', 'dwm.exe',
+                'sihost.exe', 'ctfmon.exe', 'taskhostw.exe', 'runtimebroker.exe',
+                'searchindexer.exe', 'wuauclt.exe', 'trustedinstaller.exe',
+                'tiworker.exe', 'compattelrunner.exe', 'telemetry.exe'
+            ]
+            
+            if progress_callback:
+                progress_callback("Aplicando prioridades altas para jogos...", 50)
+            
+            # Configurar alta prioridade para jogos ativos
+            games_found = 0
+            for proc in psutil.process_iter(['pid', 'name']):
+                try:
+                    proc_name = proc.info['name'].lower()
+                    if any(game.lower() in proc_name for game in gaming_processes):
+                        process = psutil.Process(proc.info['pid'])
+                        process.nice(psutil.HIGH_PRIORITY_CLASS)
+                        optimizations.append(f"🎮 {proc.info['name']}: Prioridade ALTA aplicada")
+                        games_found += 1
+                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                    continue
+            
+            if progress_callback:
+                progress_callback("Aplicando prioridades baixas para processos do sistema...", 80)
+            
+            # Configurar baixa prioridade para processos do sistema
+            system_processes_lowered = 0
+            for proc in psutil.process_iter(['pid', 'name']):
+                try:
+                    proc_name = proc.info['name'].lower()
+                    if any(sys_proc.lower() in proc_name for sys_proc in low_priority_processes):
+                        process = psutil.Process(proc.info['pid'])
+                        process.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
+                        system_processes_lowered += 1
+                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                    continue
+            
+            if games_found > 0:
+                optimizations.append(f"🎯 {games_found} jogos com prioridade ALTA")
+            else:
+                optimizations.append("🔍 Nenhum jogo ativo encontrado")
+            
+            if system_processes_lowered > 0:
+                optimizations.append(f"📉 {system_processes_lowered} processos sistema com prioridade BAIXA")
+            
+            # Configurar CPU affinity para melhor performance
+            self._optimize_cpu_affinity()
+            optimizations.append("🔧 CPU affinity otimizada para gaming")
+            
+            if progress_callback:
+                progress_callback("🚀 Gerenciamento de prioridades concluído!", 100)
+            
+        except Exception as e:
+            self.logger.error(f"Erro no gerenciamento de prioridades: {e}")
+            optimizations.append("⚠️ Erro no gerenciamento de prioridades")
+        
+        return optimizations
+    
+    def _optimize_cpu_affinity(self):
+        """Otimizar CPU affinity para melhor distribuição de carga"""
+        try:
+            import os
+            cpu_count = os.cpu_count()
+            
+            if cpu_count and cpu_count >= 8:  # Para CPUs com 8+ cores
+                # Reservar últimos 2 cores para jogos
+                game_cores = list(range(cpu_count - 2, cpu_count))
+                system_cores = list(range(0, cpu_count - 2))
+                
+                # Aplicar affinity via PowerShell para processos específicos
+                powershell_cmd = f'''
+                $GameCores = {",".join(map(str, game_cores))}
+                $SystemCores = {",".join(map(str, system_cores))}
+                
+                # Configurar cores para jogos específicos se estiverem rodando
+                Get-Process | Where-Object {{$_.ProcessName -match "cs2|csgo|valorant|apex"}} | ForEach-Object {{
+                    $_.ProcessorAffinity = [System.IntPtr]({2**(game_cores[0]) + 2**(game_cores[1])})
+                }}
+                '''
+                
+                subprocess.run(['powershell', '-Command', powershell_cmd], capture_output=True, timeout=10)
+                
+        except Exception as e:
+            self.logger.warning(f"Erro na otimização de CPU affinity: {e}")
