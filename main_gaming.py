@@ -382,6 +382,33 @@ class AdvancedMainWindow(ctk.CTk):
         )
         extreme_desc.pack(side="left", padx=10, fill="x", expand=True)
         
+        # 🔥 MODO 4: AMD BEAST MODE (NOVO!)
+        amd_beast_frame = ctk.CTkFrame(special_modes_frame)
+        amd_beast_frame.pack(pady=10, padx=15, fill="x")
+        
+        amd_beast_btn = ctk.CTkButton(
+            amd_beast_frame,
+            text="🔥 MODO AMD BEAST",
+            command=self.activate_amd_beast_mode,
+            height=40,
+            width=200,
+            font=("Arial", 12, "bold"),
+            fg_color="#ff4500",
+            hover_color="#cc3300"
+        )
+        amd_beast_btn.pack(side="left", padx=10, pady=10)
+        
+        amd_beast_desc = ctk.CTkLabel(
+            amd_beast_frame,
+            text="🔥 ESPECÍFICO AMD: Ryzen CPU + Radeon GPU otimizações extremas\n" +
+                 "🚀 INCLUI: HPET disable, ULPS off, power plans AMD, timers otimizados\n" +
+                 "💪 IDEAL: Hardware AMD Ryzen + Radeon (máximo FPS)",
+            font=("Arial", 10),
+            justify="left",
+            text_color="#ff6600"
+        )
+        amd_beast_desc.pack(side="left", padx=10, fill="x", expand=True)
+        
         # Aviso de proteção de áudio
         audio_protection_label = ctk.CTkLabel(
             special_modes_frame,
@@ -1308,8 +1335,8 @@ class AdvancedMainWindow(ctk.CTk):
     def open_special_modes(self):
         """Abre a janela de modos especiais"""
         try:
-            # Importar aqui para evitar circular import
-            from special_modes_ui import SpecialModesWindow
+            # Criar uma nova janela simplificada de modos especiais
+            import tkinter as tk
             
             # Verificar se já existe uma janela aberta
             if hasattr(self, 'special_modes_window') and self.special_modes_window.winfo_exists():
@@ -1317,8 +1344,33 @@ class AdvancedMainWindow(ctk.CTk):
                 self.special_modes_window.focus()
                 return
             
-            # Criar nova janela
-            self.special_modes_window = SpecialModesWindow(self, self.special_modes)
+            # Criar nova janela simplificada
+            self.special_modes_window = tk.Toplevel(self)
+            self.special_modes_window.title("🚀 Modos Especiais")
+            self.special_modes_window.geometry("600x400")
+            self.special_modes_window.configure(bg="#2b2b2b")
+            
+            # Label informativo
+            info_label = tk.Label(
+                self.special_modes_window,
+                text="🚀 MODOS ESPECIAIS DISPONÍVEIS\n\nUse os botões na aba principal 'Otimização'",
+                bg="#2b2b2b",
+                fg="white",
+                font=("Arial", 14),
+                justify="center"
+            )
+            info_label.pack(pady=50)
+            
+            # Botão para fechar
+            close_btn = tk.Button(
+                self.special_modes_window,
+                text="Fechar",
+                command=self.special_modes_window.destroy,
+                bg="#cc0000",
+                fg="white",
+                font=("Arial", 12)
+            )
+            close_btn.pack(pady=20)
             
         except Exception as e:
             messagebox.showerror(
@@ -1464,6 +1516,18 @@ class AdvancedMainWindow(ctk.CTk):
                 special_modes._apply_extreme_memory_settings()
                 
                 self.after(0, lambda: self.log_optimization("✅ MODO EXTREMO TOTAL ATIVADO!"))
+                
+                # Executar otimizações extremas de performance
+                from optimizer.performance import PerformanceOptimizer
+                perf_optimizer = PerformanceOptimizer()
+                if hasattr(perf_optimizer, 'extreme_gaming_optimization'):
+                    self.after(0, lambda: self.log_optimization("🔥 Aplicando otimizações gaming extremas..."))
+                    perf_optimizer.extreme_gaming_optimization()
+                
+                # Executar otimizações específicas AMD
+                if hasattr(self.advanced_optimizer, 'optimize_amd_specific'):
+                    self.after(0, lambda: self.log_optimization("🚀 Aplicando otimizações específicas AMD..."))
+                    self.advanced_optimizer.optimize_amd_specific()
                 self.after(0, lambda: messagebox.showinfo("Sucesso", 
                           f"⚡ MODO EXTREMO TOTAL ATIVADO!\n\n" +
                           f"🚨 MÁXIMA PERFORMANCE ALCANÇADA!\n" +
@@ -1476,6 +1540,65 @@ class AdvancedMainWindow(ctk.CTk):
                 self.after(0, lambda: messagebox.showerror("Erro", f"Erro no Modo Extremo: {e}"))
         
         threading.Thread(target=extreme_worker, daemon=True).start()
+    
+    def activate_amd_beast_mode(self):
+        """🔥 MODO AMD BEAST - Otimizações específicas e extremas para AMD"""
+        if not messagebox.askyesno("🔥 MODO AMD BEAST", 
+                                   "🔥 MODO AMD BEAST - ESPECÍFICO AMD\n\n" +
+                                   "🚀 OTIMIZAÇÕES INCLUEM:\n" +
+                                   "• AMD Ryzen: Power plan otimizado\n" +
+                                   "• AMD Radeon: ULPS OFF, sem throttling\n" +
+                                   "• HPET: Desabilitado (reduz latência)\n" +
+                                   "• Memory: Timings AMD otimizados\n" +
+                                   "• CPU: 100% performance constante\n" +
+                                   "• Network: Latência extremamente reduzida\n\n" +
+                                   "💪 IDEAL PARA:\n" +
+                                   "• Processadores AMD Ryzen\n" +
+                                   "• Placas de vídeo AMD Radeon\n" +
+                                   "• Jogos competitivos (CS2, Valorant, R6)\n\n" +
+                                   "🎤 ÁUDIO: Sempre protegido!\n\n" +
+                                   "⚠️ APENAS para hardware AMD!\n" +
+                                   "Continuar?"):
+            return
+        
+        def amd_beast_worker():
+            try:
+                self.after(0, lambda: self.log_optimization("🔥 INICIANDO MODO AMD BEAST..."))
+                
+                # Aplicar otimizações AMD específicas do advanced_optimizer
+                if hasattr(self.advanced_optimizer, 'optimize_amd_specific'):
+                    self.after(0, lambda: self.log_optimization("🚀 Otimizações AMD Ryzen + Radeon..."))
+                    amd_opts = self.advanced_optimizer.optimize_amd_specific()
+                    for opt in amd_opts:
+                        self.after(0, lambda o=opt: self.log_optimization(f"✅ {o}"))
+                
+                # Aplicar modo AMD Beast do special_modes
+                from optimizer.special_modes import SpecialModes
+                special_modes = SpecialModes(self.advanced_optimizer)
+                
+                self.after(0, lambda: self.log_optimization("🔥 Ativando MODO AMD BEAST..."))
+                result = special_modes.activate_amd_beast_mode()
+                
+                if result.get("success"):
+                    for opt in result.get("optimizations", []):
+                        self.after(0, lambda o=opt: self.log_optimization(f"✅ {o}"))
+                    
+                    self.after(0, lambda: self.log_optimization("🔥 MODO AMD BEAST ATIVADO COM SUCESSO!"))
+                    self.after(0, lambda: self.log_optimization("💪 Hardware AMD otimizado para máxima performance!"))
+                    self.after(0, lambda: messagebox.showinfo("Sucesso", 
+                                                             "🔥 MODO AMD BEAST ATIVADO!\n\n" +
+                                                             "Hardware AMD otimizado para máxima performance!\n" +
+                                                             "Reinicie para aplicar todas as otimizações."))
+                else:
+                    error_msg = result.get("message", "Erro desconhecido")
+                    self.after(0, lambda: self.log_optimization(f"❌ ERRO: {error_msg}"))
+                    self.after(0, lambda: messagebox.showerror("Erro", f"Erro ao ativar AMD Beast Mode:\n{error_msg}"))
+                
+            except Exception as e:
+                self.after(0, lambda: self.log_optimization(f"❌ ERRO CRÍTICO: {str(e)}"))
+                self.after(0, lambda: messagebox.showerror("Erro", f"Erro crítico no AMD Beast Mode: {e}"))
+        
+        threading.Thread(target=amd_beast_worker, daemon=True).start()
 
 
 def main():

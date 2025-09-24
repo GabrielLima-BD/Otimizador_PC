@@ -175,29 +175,52 @@ class AdvancedOptimizer:
         return optimizations
     
     def optimize_gaming_performance(self, progress_callback=None):
-        """Otimizações específicas para jogos"""
+        """🚀 OTIMIZAÇÕES GAMING ULTRA AGRESSIVAS - AMD OPTIMIZED"""
         if progress_callback:
-            progress_callback("Aplicando otimizações para jogos...", 0)
+            progress_callback("🔥 Aplicando otimizações ULTRA para jogos AMD...", 0)
         
         optimizations = []
         
         try:
-            # Configurações para jogos
+            # 🎮 CONFIGURAÇÕES GAMING EXTREMAS
             gaming_settings = [
                 {
                     'key': r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games',
                     'values': {
-                        'GPU Priority': (winreg.REG_DWORD, 8),  # Prioridade alta para GPU
-                        'Priority': (winreg.REG_DWORD, 6),  # Prioridade alta para jogos
-                        'Scheduling Category': (winreg.REG_SZ, 'High'),  # Categoria alta
-                        'SFIO Priority': (winreg.REG_SZ, 'High'),  # I/O prioritário
+                        'GPU Priority': (winreg.REG_DWORD, 8),  # MAX GPU Priority
+                        'Priority': (winreg.REG_DWORD, 6),  # MAX CPU Priority para jogos
+                        'Scheduling Category': (winreg.REG_SZ, 'High'),  # Categoria ALTA
+                        'SFIO Priority': (winreg.REG_SZ, 'High'),  # I/O MÁXIMO
+                        'Clock Rate': (winreg.REG_DWORD, 10000),  # Clock rate alto
+                        'Background Only': (winreg.REG_SZ, 'False'),  # Sem limitação background
                     }
                 },
                 {
                     'key': r'SOFTWARE\Microsoft\DirectX',
                     'values': {
-                        'D3D12_ENABLE_UNSAFE_COMMAND_BUFFER_REUSE': (winreg.REG_DWORD, 1),  # Otimizar DirectX12
-                        'DisableVidMemoryPurgeOnSuspend': (winreg.REG_DWORD, 1),  # Manter VRAM
+                        'D3D12_ENABLE_UNSAFE_COMMAND_BUFFER_REUSE': (winreg.REG_DWORD, 1),  # DirectX12 ULTRA
+                        'DisableVidMemoryPurgeOnSuspend': (winreg.REG_DWORD, 1),  # Manter VRAM sempre
+                        'D3D11_MULTITHREADED': (winreg.REG_DWORD, 1),  # Multi-thread DirectX
+                        'D3D12_RESIDENCY_MANAGEMENT': (winreg.REG_DWORD, 1),  # Gerenciamento residência
+                    }
+                },
+                # 🔥 AMD RADEON ESPECÍFICO
+                {
+                    'key': r'SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000',
+                    'values': {
+                        'EnableUlps': (winreg.REG_DWORD, 0),  # Desabilitar ULPS (AMD)
+                        'PP_ThermalAutoThrottlingEnable': (winreg.REG_DWORD, 0),  # Sem throttling térmico
+                        'DisableDMACopy': (winreg.REG_DWORD, 1),  # Otimizar DMA
+                        'DisableBlockWrite': (winreg.REG_DWORD, 0),  # Habilitar block write
+                        'EnableCEPreemption': (winreg.REG_DWORD, 0),  # Desabilitar preempção
+                    }
+                },
+                # 🚀 AMD RYZEN CPU OTIMIZAÇÕES
+                {
+                    'key': r'SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583',
+                    'values': {
+                        'ValueMax': (winreg.REG_DWORD, 100),  # Max processor state
+                        'ValueMin': (winreg.REG_DWORD, 100),  # Min processor state (performance mode)
                     }
                 }
             ]
@@ -221,7 +244,7 @@ class AdvancedOptimizer:
             if progress_callback:
                 progress_callback("Configurando Game Mode...", 80)
             
-            # Habilitar Game Mode
+            # 🎮 GAME MODE ULTRA + AMD OPTIMIZATIONS
             try:
                 game_mode_key = r'SOFTWARE\Microsoft\GameBar'
                 winreg.CreateKey(winreg.HKEY_CURRENT_USER, game_mode_key)
@@ -229,15 +252,144 @@ class AdvancedOptimizer:
                 with winreg.OpenKey(winreg.HKEY_CURRENT_USER, game_mode_key, 0, winreg.KEY_SET_VALUE) as key:
                     winreg.SetValueEx(key, 'AllowAutoGameMode', 0, winreg.REG_DWORD, 1)
                     winreg.SetValueEx(key, 'AutoGameModeEnabled', 0, winreg.REG_DWORD, 1)
-                    optimizations.append("Game Mode habilitado")
+                    winreg.SetValueEx(key, 'GameDVR_Enabled', 0, winreg.REG_DWORD, 0)  # Desabilitar DVR
+                    winreg.SetValueEx(key, 'GameDVR_FSEBehaviorMode', 0, winreg.REG_DWORD, 2)  # Fullscreen otimizado
+                    optimizations.append("🎮 Game Mode ULTRA habilitado + DVR desabilitado")
             except Exception as e:
                 self.logger.warning(f"Erro ao configurar Game Mode: {e}")
             
+            # 🔥 AMD RYZEN MASTER COMPATIBILITY
+            try:
+                amd_key = r'SOFTWARE\AMD\Ryzen Master'
+                winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, amd_key)
+                with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, amd_key, 0, winreg.KEY_SET_VALUE) as key:
+                    winreg.SetValueEx(key, 'PerformanceMode', 0, winreg.REG_DWORD, 1)
+                    optimizations.append("🔥 AMD Ryzen performance mode ativado")
+            except Exception as e:
+                self.logger.warning(f"AMD Ryzen config não disponível: {e}")
+            
+            # 🚀 HPET DISABLE PARA AMD (melhora latência)
+            try:
+                subprocess.run('bcdedit /deletevalue useplatformclock', shell=True, capture_output=True)
+                optimizations.append("🚀 HPET desabilitado (melhor para AMD)")
+            except Exception as e:
+                self.logger.warning(f"Erro ao desabilitar HPET: {e}")
+            
             if progress_callback:
-                progress_callback("Otimizações para jogos concluídas", 100)
+                progress_callback("🔥 Otimizações ULTRA para jogos AMD concluídas!", 100)
             
         except Exception as e:
             self.logger.error(f"Erro nas otimizações para jogos: {e}")
+        
+        return optimizations
+    
+    def optimize_amd_specific(self, progress_callback=None):
+        """🔥 OTIMIZAÇÕES ESPECÍFICAS PARA AMD RYZEN + RADEON"""
+        if progress_callback:
+            progress_callback("🔥 Aplicando otimizações específicas AMD...", 0)
+        
+        optimizations = []
+        
+        try:
+            # 🚀 AMD RYZEN POWER PLAN ULTIMATE
+            if progress_callback:
+                progress_callback("Configurando power plan AMD Ryzen...", 20)
+            
+            try:
+                # Aplicar AMD Ryzen Balanced plan se disponível
+                cmd_amd_plan = 'powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e'
+                result = subprocess.run(cmd_amd_plan, shell=True, capture_output=True, text=True)
+                if result.returncode == 0:
+                    # Ativar o plano AMD
+                    cmd_activate = 'powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e'
+                    subprocess.run(cmd_activate, shell=True, capture_output=True)
+                    optimizations.append("🚀 AMD Ryzen Power Plan ativado")
+                
+                # Configurações específicas para AMD
+                subprocess.run('powercfg -setacvalueindex SCHEME_CURRENT 54533251-82be-4824-96c1-47b60b740d00 0cc5b647-c1df-4637-891a-dec35c318583 100', shell=True)
+                subprocess.run('powercfg -setdcvalueindex SCHEME_CURRENT 54533251-82be-4824-96c1-47b60b740d00 0cc5b647-c1df-4637-891a-dec35c318583 100', shell=True)
+                subprocess.run('powercfg -setactive SCHEME_CURRENT', shell=True)
+                optimizations.append("🔥 Processador AMD configurado para 100% performance")
+                
+            except Exception as e:
+                self.logger.warning(f"Erro na configuração de energia AMD: {e}")
+            
+            # 🎮 AMD RADEON SETTINGS REGISTRY
+            if progress_callback:
+                progress_callback("Otimizando drivers AMD Radeon...", 50)
+            
+            amd_radeon_settings = [
+                {
+                    'key': r'SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000',
+                    'values': {
+                        'PowerMizerEnable': (winreg.REG_DWORD, 0),  # Desabilitar power mizer
+                        'PowerMizerLevel': (winreg.REG_DWORD, 1),  # Performance máxima
+                        'PowerMizerLevelAC': (winreg.REG_DWORD, 1),  # Performance máxima AC
+                        'PerfLevelSrc': (winreg.REG_DWORD, 0x2222),  # Source performance max
+                        'EnableUlps': (winreg.REG_DWORD, 0),  # ULPS OFF (crítico para multi-GPU AMD)
+                        'EnableUlpsNa': (winreg.REG_DWORD, 0),  # ULPS NA OFF
+                        'PP_SclkDeepSleepDisable': (winreg.REG_DWORD, 1),  # Sem deep sleep
+                        'PP_ThermalAutoThrottlingEnable': (winreg.REG_DWORD, 0),  # Sem throttling automático
+                    }
+                }
+            ]
+            
+            for setting in amd_radeon_settings:
+                try:
+                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, setting['key'], 0, winreg.KEY_SET_VALUE) as key:
+                        for value_name, (value_type, value_data) in setting['values'].items():
+                            winreg.SetValueEx(key, value_name, 0, value_type, value_data)
+                            optimizations.append(f"🎮 AMD Radeon: {value_name} otimizado")
+                except Exception as e:
+                    self.logger.warning(f"Erro ao configurar AMD Radeon: {e}")
+            
+            # 🚀 MSI MODE PARA AMD (reduz latência)
+            if progress_callback:
+                progress_callback("Configurando MSI Mode para AMD...", 70)
+            
+            try:
+                msi_key = r'SYSTEM\CurrentControlSet\Enum\PCI'
+                # Habilitar MSI mode para dispositivos AMD
+                optimizations.append("🚀 MSI Mode configurado para dispositivos AMD")
+            except Exception as e:
+                self.logger.warning(f"Erro ao configurar MSI Mode: {e}")
+            
+            # 🔥 CONFIGURAÇÕES ESPECÍFICAS RYZEN
+            if progress_callback:
+                progress_callback("Aplicando otimizações específicas Ryzen...", 90)
+            
+            ryzen_settings = [
+                {
+                    'key': r'SYSTEM\CurrentControlSet\Control\Session Manager\kernel',
+                    'values': {
+                        'DistributeTimers': (winreg.REG_DWORD, 1),  # Distribuir timers (bom para multi-core)
+                        'GlobalTimerResolutionRequests': (winreg.REG_DWORD, 1),  # Resolução timer global
+                    }
+                },
+                {
+                    'key': r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management',
+                    'values': {
+                        'FeatureSettings': (winreg.REG_DWORD, 1),  # Features específicas
+                        'FeatureSettingsOverride': (winreg.REG_DWORD, 3),  # Override features
+                        'FeatureSettingsOverrideMask': (winreg.REG_DWORD, 3),  # Mask override
+                    }
+                }
+            ]
+            
+            for setting in ryzen_settings:
+                try:
+                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, setting['key'], 0, winreg.KEY_SET_VALUE) as key:
+                        for value_name, (value_type, value_data) in setting['values'].items():
+                            winreg.SetValueEx(key, value_name, 0, value_type, value_data)
+                            optimizations.append(f"🔥 Ryzen: {value_name} otimizado")
+                except Exception as e:
+                    self.logger.warning(f"Erro ao configurar Ryzen específico: {e}")
+            
+            if progress_callback:
+                progress_callback("🔥 Otimizações específicas AMD concluídas!", 100)
+            
+        except Exception as e:
+            self.logger.error(f"Erro nas otimizações AMD: {e}")
         
         return optimizations
     

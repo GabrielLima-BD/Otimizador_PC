@@ -80,12 +80,51 @@ class SpecialModes:
                 'DcomLaunch', 'RpcSs', 'MMCSS', 'WavesSysSvc'
             ]
             
+            # 🔥 LISTA EXTREMA DE SERVIÇOS PARA DESABILITAR (GAMING BRUTAL)
             services_to_disable = [
                 "Themes", "Windows Search", "Print Spooler", "Fax",
                 "Windows Update", "Background Intelligent Transfer Service",
                 "Windows Defender Antivirus Service", "TabletInputService",
                 "Touch Keyboard and Handwriting Panel Service",
-                "Windows Mobile Hotspot Service", "Windows Biometric Service"
+                "Windows Mobile Hotspot Service", "Windows Biometric Service",
+                # 🚀 SERVIÇOS EXTRAS PARA GAMING EXTREMO
+                "SysMain",  # Superfetch (pode atrapalhar)
+                "WerSvc",   # Windows Error Reporting
+                "DiagTrack",  # Telemetria
+                "RetailDemo",  # Demo mode
+                "RemoteAccess",  # Remote access
+                "SharedAccess",  # Internet connection sharing
+                "Browser",   # Computer Browser
+                "TapiSrv",   # Telephony
+                "SCardSvr",  # Smart Card
+                "WinRM",     # Windows Remote Management
+                "RemoteRegistry",  # Remote Registry
+                "SessionEnv",      # Terminal Services
+                "TermService",     # Remote Desktop
+                "UmRdpService",    # RDP UserMode
+                "WiaRpc",    # Windows Image Acquisition
+                "stisvc",    # Still Image Service
+                "SensrSvc",  # Sensor Service
+                "PeerDistSvc",  # BranchCache
+                "CscService",   # Offline Files
+                "WMPNetworkSvc",  # Windows Media Player Network (se não usar)
+                "FontCache",      # Windows Font Cache (temporário)
+                "AppReadiness",   # App Readiness
+                "AppVClient",     # App-V Client
+                "tzautoupdate",   # Auto Time Zone Updater
+                "MapsBroker",     # Downloaded Maps Manager
+                "lfsvc",          # Geolocation Service
+                "NetTcpPortSharing",  # Net.Tcp Port Sharing
+                "WbioSrvc",       # Windows Biometric Service
+                "PhoneSvc",       # Phone Service
+                "PimIndexMaintenanceSvc",  # Contact Data
+                "UnistoreSvc",    # User Data Storage
+                "UserDataSvc",    # User Data Access
+                "WpnService",     # Windows Push Notifications
+                "XblAuthManager", # Xbox Live Auth Manager
+                "XblGameSave",    # Xbox Live Game Save
+                "XboxGipSvc",     # Xbox Accessory Management
+                "XboxNetApiSvc",  # Xbox Live Networking
             ]
             
             for service in services_to_disable:
@@ -95,18 +134,50 @@ class SpecialModes:
                 if self._disable_service(service):
                     optimizations_applied.append(f"Serviço desativado: {service}")
             
-            # 2. Parar processos desnecessários
+            # 2. 🔥 PARAR PROCESSOS DESNECESSÁRIOS (LISTA EXTREMA)
             if progress_callback:
-                progress_callback("Finalizando processos desnecessários...", 3, 10)
+                progress_callback("🔥 Finalizando processos desnecessários...", 3, 10)
             
             processes_to_stop = [
+                # Comunicação/Social
                 "OneDrive.exe", "Teams.exe", "Skype.exe", "Spotify.exe",
-                "Discord.exe", "Chrome.exe", "Firefox.exe"
+                "Discord.exe", "WhatsApp.exe", "Telegram.exe",
+                # Navegadores (mantém apenas um ativo se necessário)
+                "Chrome.exe", "Firefox.exe", "Edge.exe", "Opera.exe",
+                # Adobe/Creative
+                "Creative Cloud.exe", "AdobeIPCBroker.exe", "CCXProcess.exe",
+                "AdobeNotificationClient.exe", "Adobe Desktop Service.exe",
+                # Antivírus/Segurança (temporário para gaming)
+                "MsMpEng.exe",  # Windows Defender (cuidado!)
+                "NisSrv.exe",   # Network Inspection Service
+                # Office/Produtividade
+                "WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "OUTLOOK.EXE",
+                "OfficeClickToRun.exe", "OfficeC2RClient.exe",
+                # Utilitários desnecessários
+                "CCleaner64.exe", "CCleaner.exe", "RtkAudUService64.exe",
+                "SteamWebHelper.exe",  # Mantém Steam.exe principal
+                "EpicGamesLauncher.exe",  # Se não estiver jogando Epic
+                "Battle.net.exe",  # Se não estiver jogando Blizzard
+                "uPlay.exe", "UplayWebCore.exe",  # Ubisoft Connect
+                # Mineração/Background indesejados
+                "dwm.exe",  # Desktop Window Manager (cuidado!)
+                "csrss.exe",  # Client Server Runtime (NUNCA MATAR - comentado)
+                # Telemetria/Rastreamento
+                "CompatTelRunner.exe", "DiagTrack.exe",
+            ]
+            
+            # ⚠️ PROCESSOS CRÍTICOS - NUNCA MATAR
+            critical_processes = [
+                "csrss.exe", "winlogon.exe", "wininit.exe", "services.exe",
+                "lsass.exe", "smss.exe", "explorer.exe", "dwm.exe",
+                "audiodg.exe",  # 🎤 ÁUDIO PROTEGIDO
             ]
             
             for process in processes_to_stop:
-                if self._stop_process(process):
-                    optimizations_applied.append(f"Processo finalizado: {process}")
+                # Verificar se não é crítico
+                if process.lower() not in [p.lower() for p in critical_processes]:
+                    if self._stop_process(process):
+                        optimizations_applied.append(f"🔥 Processo finalizado: {process}")
             
             # 3. Configurações de performance extrema
             if progress_callback:
@@ -1135,3 +1206,183 @@ class SpecialModes:
             score += memory_improvement * 1.5
         
         return min(100.0, max(0.0, score))
+    
+    # 🔥 MODO AMD BEAST - Específico para hardware AMD
+    def activate_amd_beast_mode(self, progress_callback: Optional[Callable] = None) -> Dict:
+        """
+        🔥 MODO AMD BEAST: Otimizações específicas e agressivas para AMD Ryzen + Radeon
+        Maximum performance para hardware AMD
+        """
+        if progress_callback:
+            progress_callback("🔥 Iniciando MODO AMD BEAST...", 0, 12)
+        
+        self.current_mode = "amd_beast"
+        optimizations_applied = []
+        
+        try:
+            # 1. 🚀 AMD RYZEN POWER PLAN ULTIMATE
+            if progress_callback:
+                progress_callback("Configurando AMD Ryzen Power Plan...", 1, 12)
+            
+            try:
+                # Tentar aplicar plano AMD específico
+                cmd_amd_plan = 'powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e'
+                result = subprocess.run(cmd_amd_plan, shell=True, capture_output=True, text=True)
+                if result.returncode == 0:
+                    cmd_activate = 'powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e'
+                    subprocess.run(cmd_activate, shell=True, capture_output=True)
+                    optimizations_applied.append("🚀 AMD Ryzen Power Plan ativado")
+                
+                # Configurações específicas AMD
+                amd_power_cmds = [
+                    'powercfg -setacvalueindex SCHEME_CURRENT 54533251-82be-4824-96c1-47b60b740d00 0cc5b647-c1df-4637-891a-dec35c318583 100',
+                    'powercfg -setdcvalueindex SCHEME_CURRENT 54533251-82be-4824-96c1-47b60b740d00 0cc5b647-c1df-4637-891a-dec35c318583 100',
+                    'powercfg -setacvalueindex SCHEME_CURRENT 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 100',
+                    'powercfg -setactive SCHEME_CURRENT'
+                ]
+                
+                for cmd in amd_power_cmds:
+                    subprocess.run(cmd, shell=True, capture_output=True)
+                
+                optimizations_applied.append("🔥 AMD CPU configurado para 100% performance constante")
+                
+            except Exception as e:
+                self.logger.warning(f"Erro configuração AMD power: {e}")
+            
+            # 2. 🎮 AMD RADEON OPTIMIZATIONS EXTREMAS
+            if progress_callback:
+                progress_callback("Otimizando AMD Radeon (registry)...", 3, 12)
+            
+            try:
+                amd_radeon_settings = [
+                    {
+                        'key': r'SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000',
+                        'values': {
+                            'EnableUlps': (winreg.REG_DWORD, 0),  # CRÍTICO: ULPS OFF
+                            'EnableUlpsNa': (winreg.REG_DWORD, 0),  # ULPS NA OFF
+                            'PP_SclkDeepSleepDisable': (winreg.REG_DWORD, 1),  # Sem deep sleep
+                            'PP_ThermalAutoThrottlingEnable': (winreg.REG_DWORD, 0),  # Sem throttling
+                            'PowerMizerEnable': (winreg.REG_DWORD, 0),  # PowerMizer OFF
+                            'PowerMizerLevel': (winreg.REG_DWORD, 1),  # Performance máxima
+                            'PowerMizerLevelAC': (winreg.REG_DWORD, 1),  # Performance AC
+                            'PerfLevelSrc': (winreg.REG_DWORD, 0x2222),  # Performance source
+                            'DisableDMACopy': (winreg.REG_DWORD, 1),  # Otimizar DMA
+                            'DisableBlockWrite': (winreg.REG_DWORD, 0),  # Block write ON
+                            'EnableCEPreemption': (winreg.REG_DWORD, 0),  # Preempção OFF
+                        }
+                    }
+                ]
+                
+                for setting in amd_radeon_settings:
+                    try:
+                        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, setting['key'], 0, winreg.KEY_SET_VALUE) as key:
+                            for value_name, (value_type, value_data) in setting['values'].items():
+                                winreg.SetValueEx(key, value_name, 0, value_type, value_data)
+                                optimizations_applied.append(f"🎮 AMD Radeon: {value_name}")
+                    except Exception as e:
+                        self.logger.warning(f"Erro AMD Radeon registry: {e}")
+                        
+            except Exception as e:
+                self.logger.warning(f"Erro otimizações AMD Radeon: {e}")
+            
+            # 3. 🚀 HPET DISABLE (melhor para AMD)
+            if progress_callback:
+                progress_callback("Desabilitando HPET (AMD optimized)...", 5, 12)
+            
+            try:
+                subprocess.run('bcdedit /deletevalue useplatformclock', shell=True, capture_output=True)
+                optimizations_applied.append("🚀 HPET desabilitado (latência reduzida AMD)")
+            except Exception as e:
+                self.logger.warning(f"Erro HPET: {e}")
+            
+            # 4. 🔥 MEMORY TIMINGS AMD OPTIMIZED
+            if progress_callback:
+                progress_callback("Otimizando memory timings para AMD...", 7, 12)
+            
+            amd_memory_settings = [
+                {
+                    'key': r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management',
+                    'values': {
+                        'FeatureSettings': (winreg.REG_DWORD, 1),
+                        'FeatureSettingsOverride': (winreg.REG_DWORD, 3),
+                        'FeatureSettingsOverrideMask': (winreg.REG_DWORD, 3),
+                        'LargeSystemCache': (winreg.REG_DWORD, 1),  # Cache grande
+                        'SystemPages': (winreg.REG_DWORD, 0xFFFFFFFF),  # Páginas otimizadas
+                    }
+                }
+            ]
+            
+            for setting in amd_memory_settings:
+                try:
+                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, setting['key'], 0, winreg.KEY_SET_VALUE) as key:
+                        for value_name, (value_type, value_data) in setting['values'].items():
+                            winreg.SetValueEx(key, value_name, 0, value_type, value_data)
+                            optimizations_applied.append(f"🔥 AMD Memory: {value_name}")
+                except Exception as e:
+                    self.logger.warning(f"Erro AMD memory: {e}")
+            
+            # 5. 🎮 RYZEN SPECIFIC OPTIMIZATIONS
+            if progress_callback:
+                progress_callback("Aplicando otimizações específicas Ryzen...", 9, 12)
+            
+            ryzen_settings = [
+                {
+                    'key': r'SYSTEM\CurrentControlSet\Control\Session Manager\kernel',
+                    'values': {
+                        'DistributeTimers': (winreg.REG_DWORD, 1),  # Distribuir timers
+                        'GlobalTimerResolutionRequests': (winreg.REG_DWORD, 1),  # Timer resolution
+                    }
+                }
+            ]
+            
+            for setting in ryzen_settings:
+                try:
+                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, setting['key'], 0, winreg.KEY_SET_VALUE) as key:
+                        for value_name, (value_type, value_data) in setting['values'].items():
+                            winreg.SetValueEx(key, value_name, 0, value_type, value_data)
+                            optimizations_applied.append(f"🎮 Ryzen: {value_name}")
+                except Exception as e:
+                    self.logger.warning(f"Erro Ryzen specific: {e}")
+            
+            # 6. 🚀 NETWORK LATENCY EXTREMA REDUÇÃO
+            if progress_callback:
+                progress_callback("Reduzindo latência de rede extrema...", 11, 12)
+            
+            network_amd_settings = [
+                {
+                    'key': r'SYSTEM\CurrentControlSet\Services\Tcpip\Parameters',
+                    'values': {
+                        'TcpAckFrequency': (winreg.REG_DWORD, 1),  # ACK imediato
+                        'TCPNoDelay': (winreg.REG_DWORD, 1),  # Sem delay
+                        'TcpDelAckTicks': (winreg.REG_DWORD, 0),  # Sem delay ACK
+                        'MaxUserPort': (winreg.REG_DWORD, 65534),  # Max portas
+                        'TcpTimedWaitDelay': (winreg.REG_DWORD, 30),  # Reduzir wait
+                    }
+                }
+            ]
+            
+            for setting in network_amd_settings:
+                try:
+                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, setting['key'], 0, winreg.KEY_SET_VALUE) as key:
+                        for value_name, (value_type, value_data) in setting['values'].items():
+                            winreg.SetValueEx(key, value_name, 0, value_type, value_data)
+                            optimizations_applied.append(f"🚀 Network AMD: {value_name}")
+                except Exception as e:
+                    self.logger.warning(f"Erro network AMD: {e}")
+            
+            if progress_callback:
+                progress_callback("🔥 MODO AMD BEAST ativado! Performance EXTREMA!", 12, 12)
+            
+            return {
+                "success": True,
+                "mode": "amd_beast",
+                "optimizations": optimizations_applied,
+                "message": "🔥 MODO AMD BEAST ativado! Hardware AMD otimizado para performance EXTREMA!"
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "message": "Erro ao ativar MODO AMD BEAST"
+            }

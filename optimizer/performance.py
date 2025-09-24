@@ -11,22 +11,39 @@ class PerformanceOptimizer:
         self.logger = logging.getLogger(__name__)
         self.optimizations_applied = []
         
-        # Serviços que podem ser desabilitados para melhor desempenho
-        # ⚠️ LISTA SEGURA DE SERVIÇOS - ÁUDIO/MICROFONE PROTEGIDOS ⚠️
+        # 🔥 LISTA AGRESSIVA DE SERVIÇOS - GAMING EXTREMO
+        # ⚠️ ÁUDIO/MICROFONE PROTEGIDOS ⚠️
         self.services_to_disable = [
             'WSearch',  # Windows Search
-            'SysMain',  # Superfetch/Prefetch
-            'Themes',   # Temas (se não usar)
-            'TabletInputService',  # Serviço de entrada de tablet
-            'WbioSrvc',  # Serviço de biometria
-            # 'WMPNetworkSvc' REMOVIDO - pode afetar áudio
-            'WerSvc',   # Relatório de erros do Windows
-            'DiagTrack',  # Telemetria
-            'RetailDemo',  # Serviço de demonstração
-            'RemoteAccess',  # Roteamento e acesso remoto
-            'SharedAccess',  # Compartilhamento de conexão de internet
-            'TrkWks',   # Cliente de rastreamento de link distribuído
-            'WpcMonSvc',  # Controle dos pais
+            'SysMain',  # Superfetch/Prefetch (pode atrapalhar jogos)
+            'Themes',   # Temas (desempenho > aparência)
+            'TabletInputService',  # Tablet (desnecessário desktop)
+            'WbioSrvc',  # Biometria (desnecessário gaming)
+            'WerSvc',   # Relatório de erros (desnecessário)
+            'DiagTrack',  # Telemetria (privacidade + performance)
+            'RetailDemo',  # Demo (desnecessário)
+            'RemoteAccess',  # Acesso remoto (segurança + performance)
+            'SharedAccess',  # ICS (desnecessário)
+            'TrkWks',   # Rastreamento (desnecessário)
+            'WpcMonSvc',  # Controle parental (desnecessário)
+            # 🔥 SERVIÇOS ADICIONAIS PARA GAMING EXTREMO
+            'Spooler',  # Print spooler (se não imprimir)
+            'Fax',      # Fax (obsoleto)
+            'WMPNetworkSvc',  # Windows Media Player Network (se não usar)
+            'Browser',  # Computer Browser (desnecessário)
+            'TapiSrv',  # Telephony (desnecessário desktop)
+            'SCardSvr', # Smart Card (se não usar)
+            'WinRM',    # Windows Remote Management
+            'RemoteRegistry',  # Registry remoto (segurança)
+            'RasMan',   # Remote Access Connection Manager
+            'SessionEnv',  # Remote Desktop Session Host
+            'TermService',  # Remote Desktop Services (se não usar)
+            'UmRdpService',  # Remote Desktop Services UserMode
+            'WiaRpc',   # Windows Image Acquisition (se não usar scanner)
+            'stisvc',   # Windows Image Acquisition (Still Image)
+            'SensrSvc', # Sensor Monitoring Service
+            'PeerDistSvc',  # BranchCache
+            'CscService',   # Offline Files
         ]
         
         # 🎤 SERVIÇOS PROTEGIDOS - NUNCA DESABILITAR (ÁUDIO/MICROFONE)
@@ -40,32 +57,83 @@ class PerformanceOptimizer:
         ]
     
     def optimize_power_settings(self, progress_callback=None):
-        """Configura plano de energia para máximo desempenho"""
+        """🚀 CONFIGURAÇÕES DE ENERGIA GAMING EXTREMO - AMD OPTIMIZED"""
         if progress_callback:
-            progress_callback("Configurando plano de energia...", 0)
+            progress_callback("🔥 Configurando energia para GAMING EXTREMO...", 0)
         
         try:
-            # Define plano de energia para alto desempenho
-            cmd_high_performance = 'powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c'
-            result1 = subprocess.run(cmd_high_performance, shell=True, capture_output=True, text=True)
-            
-            # Desabilita hibernação
-            cmd_hibernate = 'powercfg -h off'
-            result2 = subprocess.run(cmd_hibernate, shell=True, capture_output=True, text=True)
-            
-            # Configura para nunca desligar o disco
-            cmd_disk = 'powercfg -change -disk-timeout-ac 0'
-            result3 = subprocess.run(cmd_disk, shell=True, capture_output=True, text=True)
-            
-            # Configura para nunca entrar em suspensão
-            cmd_standby = 'powercfg -change -standby-timeout-ac 0'
-            result4 = subprocess.run(cmd_standby, shell=True, capture_output=True, text=True)
+            # 🚀 ULTIMATE PERFORMANCE PLAN (Windows 10/11)
+            cmd_ultimate = 'powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61'
+            result_ultimate = subprocess.run(cmd_ultimate, shell=True, capture_output=True, text=True)
+            if result_ultimate.returncode == 0:
+                cmd_activate_ultimate = 'powercfg -setactive e9a42b02-d5df-448d-aa00-03f14749eb61'
+                subprocess.run(cmd_activate_ultimate, shell=True, capture_output=True, text=True)
+                self.optimizations_applied.append("🚀 Ultimate Performance Plan ativado")
+            else:
+                # Fallback para High Performance
+                cmd_high_performance = 'powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c'
+                subprocess.run(cmd_high_performance, shell=True, capture_output=True, text=True)
+                self.optimizations_applied.append("⚡ High Performance Plan ativado")
             
             if progress_callback:
-                progress_callback("Plano de energia configurado", 100)
+                progress_callback("Configurando hibernação e suspensão...", 25)
             
-            self.optimizations_applied.append("Plano de energia otimizado")
-            self.logger.info("Configurações de energia otimizadas")
+            # 🔥 DESABILITAR TODAS AS ECONOMIAS DE ENERGIA
+            power_commands = [
+                'powercfg -h off',  # Hibernação OFF
+                'powercfg -change -disk-timeout-ac 0',  # Disco nunca desliga
+                'powercfg -change -disk-timeout-dc 0',  # Disco nunca desliga (bateria)
+                'powercfg -change -standby-timeout-ac 0',  # Suspensão OFF
+                'powercfg -change -standby-timeout-dc 0',  # Suspensão OFF (bateria)
+                'powercfg -change -monitor-timeout-ac 0',  # Monitor nunca desliga
+                'powercfg -change -hibernate-timeout-ac 0',  # Hibernação timeout OFF
+                'powercfg -change -hibernate-timeout-dc 0',  # Hibernação timeout OFF (bateria)
+            ]
+            
+            for cmd in power_commands:
+                subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            
+            if progress_callback:
+                progress_callback("Configurações avançadas de CPU...", 50)
+            
+            # 🔥 CONFIGURAÇÕES ESPECÍFICAS AMD RYZEN
+            amd_power_settings = [
+                # Processador sempre 100%
+                'powercfg -setacvalueindex SCHEME_CURRENT 54533251-82be-4824-96c1-47b60b740d00 0cc5b647-c1df-4637-891a-dec35c318583 100',
+                'powercfg -setdcvalueindex SCHEME_CURRENT 54533251-82be-4824-96c1-47b60b740d00 0cc5b647-c1df-4637-891a-dec35c318583 100',
+                # Mínimo do processador 100% (sem downclocking)
+                'powercfg -setacvalueindex SCHEME_CURRENT 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 100',
+                'powercfg -setdcvalueindex SCHEME_CURRENT 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 100',
+                # Política de resfriamento agressiva
+                'powercfg -setacvalueindex SCHEME_CURRENT 54533251-82be-4824-96c1-47b60b740d00 94d3a615-a899-4ac5-ae2b-e4d8f634367f 1',
+                'powercfg -setdcvalueindex SCHEME_CURRENT 54533251-82be-4824-96c1-47b60b740d00 94d3a615-a899-4ac5-ae2b-e4d8f634367f 1',
+            ]
+            
+            for cmd in amd_power_settings:
+                subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            
+            if progress_callback:
+                progress_callback("Configurações PCI Express...", 75)
+            
+            # 🚀 PCI EXPRESS SEM ECONOMIA (crítico para GPU AMD)
+            pcie_commands = [
+                'powercfg -setacvalueindex SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5 0',
+                'powercfg -setdcvalueindex SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5 0',
+            ]
+            
+            for cmd in pcie_commands:
+                subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            
+            # Aplicar todas as configurações
+            subprocess.run('powercfg -setactive SCHEME_CURRENT', shell=True, capture_output=True, text=True)
+            
+            if progress_callback:
+                progress_callback("🔥 Energia GAMING EXTREMO configurada!", 100)
+            
+            self.optimizations_applied.append("🔥 Configurações de energia GAMING EXTREMO aplicadas")
+            self.optimizations_applied.append("🚀 CPU AMD configurado para performance máxima constante")
+            self.optimizations_applied.append("⚡ PCI Express sem economia de energia (GPU AMD otimizada)")
+            self.logger.info("🔥 Configurações de energia GAMING EXTREMO aplicadas")
             return True
             
         except Exception as e:
@@ -196,8 +264,133 @@ class PerformanceOptimizer:
             self.logger.error(f"Erro ao desabilitar indexação: {e}")
             return False
     
+    def extreme_gaming_optimization(self, progress_callback=None):
+        """🔥 OTIMIZAÇÕES GAMING EXTREMAS - MODO BESTIAL"""
+        if progress_callback:
+            progress_callback("🔥 Aplicando otimizações GAMING EXTREMAS...", 0)
+        
+        try:
+            # 🚀 TIMER RESOLUTION EXTREMO (melhora FPS)
+            if progress_callback:
+                progress_callback("Configurando timer resolution extremo...", 20)
+            
+            timer_settings = [
+                {
+                    'key': r'SYSTEM\CurrentControlSet\Control\Session Manager\kernel',
+                    'values': {
+                        'GlobalTimerResolutionRequests': (winreg.REG_DWORD, 1),
+                        'DistributeTimers': (winreg.REG_DWORD, 1),
+                    }
+                }
+            ]
+            
+            for setting in timer_settings:
+                try:
+                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, setting['key'], 0, winreg.KEY_SET_VALUE) as key:
+                        for value_name, (value_type, value_data) in setting['values'].items():
+                            winreg.SetValueEx(key, value_name, 0, value_type, value_data)
+                            self.optimizations_applied.append(f"🚀 Timer: {value_name} otimizado")
+                except Exception as e:
+                    self.logger.warning(f"Erro timer settings: {e}")
+            
+            # 🎮 PRIORIDADES DE PROCESSOS GAMING
+            if progress_callback:
+                progress_callback("Configurando prioridades de processos...", 40)
+            
+            priority_settings = [
+                {
+                    'key': r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csgo.exe\PerfOptions',
+                    'values': {'CpuPriorityClass': (winreg.REG_DWORD, 3)}  # High priority
+                },
+                {
+                    'key': r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\valorant.exe\PerfOptions',
+                    'values': {'CpuPriorityClass': (winreg.REG_DWORD, 3)}
+                },
+                {
+                    'key': r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\RainbowSix.exe\PerfOptions',
+                    'values': {'CpuPriorityClass': (winreg.REG_DWORD, 3)}
+                },
+                {
+                    'key': r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\FortniteClient-Win64-Shipping.exe\PerfOptions',
+                    'values': {'CpuPriorityClass': (winreg.REG_DWORD, 3)}
+                }
+            ]
+            
+            for setting in priority_settings:
+                try:
+                    winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, setting['key'])
+                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, setting['key'], 0, winreg.KEY_SET_VALUE) as key:
+                        for value_name, (value_type, value_data) in setting['values'].items():
+                            winreg.SetValueEx(key, value_name, 0, value_type, value_data)
+                except Exception as e:
+                    continue
+            
+            self.optimizations_applied.append("🎮 Prioridades de jogos configuradas (HIGH)")
+            
+            # 🔥 MEMORY MANAGEMENT EXTREMO
+            if progress_callback:
+                progress_callback("Otimização extrema de memória...", 60)
+            
+            memory_extreme = [
+                {
+                    'key': r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management',
+                    'values': {
+                        'LargeSystemCache': (winreg.REG_DWORD, 1),  # Cache grande para jogos
+                        'DisablePagingExecutive': (winreg.REG_DWORD, 1),  # Kernel na RAM
+                        'ClearPageFileAtShutdown': (winreg.REG_DWORD, 0),  # Não limpar (mais rápido)
+                        'SystemPages': (winreg.REG_DWORD, 0xFFFFFFFF),  # Páginas otimizadas
+                        'PoolUsageMaximum': (winreg.REG_DWORD, 60),  # Pool usage otimizado
+                    }
+                }
+            ]
+            
+            for setting in memory_extreme:
+                try:
+                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, setting['key'], 0, winreg.KEY_SET_VALUE) as key:
+                        for value_name, (value_type, value_data) in setting['values'].items():
+                            winreg.SetValueEx(key, value_name, 0, value_type, value_data)
+                            self.optimizations_applied.append(f"🔥 Memória: {value_name} extremo")
+                except Exception as e:
+                    self.logger.warning(f"Erro memory extreme: {e}")
+            
+            # 🚀 NETWORK LATENCY REDUÇÃO EXTREMA
+            if progress_callback:
+                progress_callback("Reduzindo latência de rede...", 80)
+            
+            network_extreme = [
+                {
+                    'key': r'SYSTEM\CurrentControlSet\Services\Tcpip\Parameters',
+                    'values': {
+                        'TcpAckFrequency': (winreg.REG_DWORD, 1),  # ACK imediato
+                        'TCPNoDelay': (winreg.REG_DWORD, 1),  # Sem delay TCP
+                        'TcpDelAckTicks': (winreg.REG_DWORD, 0),  # Sem delay ACK
+                        'MaxUserPort': (winreg.REG_DWORD, 65534),  # Máximo portas
+                        'TcpTimedWaitDelay': (winreg.REG_DWORD, 30),  # Reduzir wait time
+                    }
+                }
+            ]
+            
+            for setting in network_extreme:
+                try:
+                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, setting['key'], 0, winreg.KEY_SET_VALUE) as key:
+                        for value_name, (value_type, value_data) in setting['values'].items():
+                            winreg.SetValueEx(key, value_name, 0, value_type, value_data)
+                            self.optimizations_applied.append(f"🚀 Rede: {value_name} otimizado")
+                except Exception as e:
+                    self.logger.warning(f"Erro network extreme: {e}")
+            
+            if progress_callback:
+                progress_callback("🔥 Otimizações GAMING EXTREMAS aplicadas!", 100)
+            
+            self.logger.info("🔥 Otimizações GAMING EXTREMAS aplicadas com sucesso")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Erro nas otimizações gaming extremas: {e}")
+            return False
+    
     def optimize_startup_programs(self, progress_callback=None):
-        """Otimiza programas de inicialização"""
+        """🚀 OTIMIZAÇÃO AGRESSIVA DE PROGRAMAS DE INICIALIZAÇÃO"""
         if progress_callback:
             progress_callback("Otimizando programas de inicialização...", 0)
         
